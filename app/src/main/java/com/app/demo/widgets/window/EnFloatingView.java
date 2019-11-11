@@ -1,8 +1,7 @@
-package com.app.demo.widgets.log;
+package com.app.demo.widgets.window;
 
 import android.content.Context;
 import android.view.MotionEvent;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;

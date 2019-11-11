@@ -1,4 +1,4 @@
-package com.app.demo;
+package com.app.demo.helper;
 
 
 import android.view.View;
@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import com.app.demo.util.AppLogger;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.IZegoLivePublisherCallback;
-import com.zego.zegoliveroom.callback.IZegoLivePublisherExCallback;
 
 /**
  * ZGPublishHelper

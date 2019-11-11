@@ -1,4 +1,4 @@
-package com.app.demo;
+package com.app.demo.helper;
 
 import android.app.Application;
 import android.view.TextureView;
@@ -23,7 +23,7 @@ import com.zego.zegoliveroom.entity.ZegoStreamInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.app.demo.ZGVideoCommunicationHelper.ZGVideoCommunicationHelperCallback.NUMBER_OF_PEOPLE_EXCEED_LIMIT;
+import static com.app.demo.helper.ZGVideoCommunicationHelper.ZGVideoCommunicationHelperCallback.NUMBER_OF_PEOPLE_EXCEED_LIMIT;
 
 
 /**
@@ -143,7 +143,7 @@ public class ZGVideoCommunicationHelper {
                     AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "初始化SDK "+ appID + " 成功");
 
                     // 多人实时视频通话由于人多的时候性能原因，这里设置较低的分辨率
-                    setVideoQuality(90, 160);
+                    setVideoQuality(1080, 1920);
 
                 } else {
                     setZgsdkInitState(ZGVideoCommunicationHelper.ZGSDKInitState.InitFailureState);
@@ -163,7 +163,7 @@ public class ZGVideoCommunicationHelper {
         ZegoAvConfig mZegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.VeryLow);
         mZegoAvConfig.setVideoEncodeResolution(width, height);
         mZegoAvConfig.setVideoCaptureResolution(width, height);
-        mZegoAvConfig.setVideoFPS(15);
+        mZegoAvConfig.setVideoFPS(60);
         zegoLiveRoom.setAVConfig(mZegoAvConfig);
     }
 

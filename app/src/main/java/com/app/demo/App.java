@@ -2,19 +2,16 @@ package com.app.demo;
 
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
-import com.app.demo.ZGBaseHelper;
-import com.app.demo.App;
+import com.app.demo.helper.ZGBaseHelper;
 import com.app.demo.util.AppLogger;
 import com.app.demo.util.DeviceInfoManager;
-import com.app.demo.widgets.log.FloatingView;
+import com.app.demo.widgets.window.FloatingView;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.zego.zegoliveroom.ZegoLiveRoom;
-import com.zego.zegoliveroom.callback.IZegoInitSDKCompletionCallback;
 
 import java.util.Date;
 

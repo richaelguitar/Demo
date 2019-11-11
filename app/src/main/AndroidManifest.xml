@@ -46,7 +46,7 @@
         <activity
             android:name=".PublishStreamAndPlayStreamUI"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.ZegoLogShareActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.WebActivity"  android:screenOrientation="portrait"/>
     </application>
 
 

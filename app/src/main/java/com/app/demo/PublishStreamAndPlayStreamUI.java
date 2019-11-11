@@ -3,7 +3,6 @@ package com.app.demo;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -12,11 +11,13 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
-import com.app.demo.databinding.PublishStreamAndPlayStreamBinding;
+import com.app.demo.databinding.CallVideoBeforeBinding;
+import com.app.demo.helper.ZGVideoCommunicationHelper;
 import com.app.demo.model.PublishStreamAndPlayStreamLayoutModel;
 
 
 import com.app.demo.ui.BaseActivity;
+import com.app.demo.widgets.window.FloatingView;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
 
 
@@ -30,12 +31,13 @@ public class PublishStreamAndPlayStreamUI extends BaseActivity {
      *
      * @return
      */
-    public PublishStreamAndPlayStreamBinding getPublishStreamAndPlayStreamBinding() {
-        return publishStreamAndPlayStreamBinding;
+
+    public  CallVideoBeforeBinding getPublishStreamAndPlayStreamBinding() {
+        return callVideoBeforeBinding;
     }
 
     //这里使用Google官方的MVVM框架DataBinding来实现UI逻辑，开发者可以根据自己的情况使用别的方式编写UI逻辑
-    protected PublishStreamAndPlayStreamBinding publishStreamAndPlayStreamBinding;
+    private CallVideoBeforeBinding   callVideoBeforeBinding;
 
     // 这里为防止多个设备测试时相同流id冲推导致的推流失败，这里使用时间戳的后4位来作为随机的流id，开发者可根据业务需要定义业务上的流id
     private String mPublishStreamid = "s-streamid-" + new Date().getTime()%(new Date().getTime()/10000);
@@ -49,12 +51,11 @@ public class PublishStreamAndPlayStreamUI extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // 使用DataBinding加载布局
-        publishStreamAndPlayStreamBinding = DataBindingUtil.setContentView(this, R.layout.publish_stream_and_play_stream);
+        callVideoBeforeBinding = DataBindingUtil.setContentView(this, R.layout.call_video_before);
         // 在退出重进房间的时候UI上记录上一次摄像头开关和麦克风开关的状态
-        publishStreamAndPlayStreamBinding.MicrophoneState.setChecked(ZGVideoCommunicationHelper.sharedInstance().getZgMicState());
-        publishStreamAndPlayStreamBinding.CameraState.setChecked(ZGVideoCommunicationHelper.sharedInstance().getZgCameraState());
+        callVideoBeforeBinding.MicrophoneState.setChecked(ZGVideoCommunicationHelper.sharedInstance().getZgMicState());
+        callVideoBeforeBinding.CameraState.setChecked(ZGVideoCommunicationHelper.sharedInstance().getZgCameraState());
 
 
         // 设置麦克风和摄像头的点击事件
@@ -65,7 +66,7 @@ public class PublishStreamAndPlayStreamUI extends BaseActivity {
         String roomid = it.getStringExtra("roomID");
 
         // 设置当前UI界面左上角的点击事件，点击之后结束当前Activity，退出房间，SDK内部在退出房间的时候会自动停止推拉流
-        publishStreamAndPlayStreamBinding.goBackToVideoCommunicationInputRoomidUI.setOnClickListener(new View.OnClickListener() {
+        callVideoBeforeBinding.goBackToVideoCommunicationInputRoomidUI.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -120,6 +121,18 @@ public class PublishStreamAndPlayStreamUI extends BaseActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FloatingView.get().show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FloatingView.get().hidden();
+    }
+
     /**
      * 定义设置麦克风和摄像头开关状态的点击事件
      *
@@ -127,7 +140,7 @@ public class PublishStreamAndPlayStreamUI extends BaseActivity {
     private void setCameraAndMicrophoneStateChangedOnClickEvent() {
 
         // 设置摄像头开关的点击事件
-        this.publishStreamAndPlayStreamBinding.CameraState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        this.callVideoBeforeBinding.CameraState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
@@ -142,7 +155,7 @@ public class PublishStreamAndPlayStreamUI extends BaseActivity {
         });
 
         // 设置麦克风开关的点击事件
-        this.publishStreamAndPlayStreamBinding.MicrophoneState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        this.callVideoBeforeBinding.MicrophoneState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 

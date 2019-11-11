@@ -5,32 +5,17 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
-import com.app.demo.ZGBaseHelper;
-import com.app.demo.ZGManager;
-import com.app.demo.ZGPlayHelper;
-import com.app.demo.ZGPublishHelper;
 import com.app.demo.databinding.VideoCommunicationMainBinding;
+import com.app.demo.helper.ZGVideoCommunicationHelper;
 import com.app.demo.util.AppLogger;
 
 import com.app.demo.ui.BaseActivity;
-import com.zego.zegoliveroom.callback.IZegoInitSDKCompletionCallback;
-import com.zego.zegoliveroom.callback.IZegoLivePlayerCallback;
-import com.zego.zegoliveroom.callback.IZegoLivePublisherCallback;
-import com.zego.zegoliveroom.callback.IZegoRoomCallback;
-import com.zego.zegoliveroom.constants.ZegoAvConfig;
-import com.zego.zegoliveroom.entity.AuxData;
-import com.zego.zegoliveroom.entity.ZegoPlayStreamQuality;
-import com.zego.zegoliveroom.entity.ZegoPublishStreamQuality;
-import com.zego.zegoliveroom.entity.ZegoStreamInfo;
-
-import java.util.HashMap;
 
 
 /**

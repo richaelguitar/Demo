@@ -1,8 +1,7 @@
-package com.app.demo.widgets.log;
+package com.app.demo.widgets.window;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -17,12 +16,13 @@ import android.widget.RelativeLayout;
 import androidx.core.view.ViewCompat;
 
 import com.app.demo.util.DeviceInfoManager;
+import com.app.demo.widgets.RequestCallVideoView;
 
 
 public class FloatingView implements IFloatingView, Handler.Callback {
-    private boolean isShowState = false; // false 为隐藏 true 为显示
+    private boolean isShowState = true; // false 为隐藏 true 为显示
     private EnFloatingView mEnFloatingView;
-    private LogView mLogView;
+    private RequestCallVideoView requestCallVideoView;
     private static volatile FloatingView mInstance;
     // 从activity里获取到的根容器，用来添加悬浮组件的
     private FrameLayout mContainer;
@@ -46,41 +46,6 @@ public class FloatingView implements IFloatingView, Handler.Callback {
         return mInstance;
     }
 
-    /**
-     * 通过此函数可以在悬浮视图里面添加日志。
-     *
-     * @param log 日志内容。
-     */
-    public void addLog(final String log) {
-        if (mLogView != null) {
-
-            // 避免在多个不同线程操作，切换到ui线程队列
-            mLogView.post(new Runnable() {
-                @Override
-                public void run() {
-
-                    mLogView.logAdapter.addLog(log);
-                    mLogView.scrollToBottom(); // 为了用户查看日志，每次添加log时都滚动到底部最新日志。
-
-                }
-            });
-        }
-    }
-
-    /**
-     * 清空日志
-     */
-    public void clearLog() {
-        if (mLogView != null) {
-            // 避免在多个不同线程操作，切换到ui线程队列
-            mLogView.post(new Runnable() {
-                @Override
-                public void run() {
-                    mLogView.logAdapter.clear();
-                }
-            });
-        }
-    }
 
     @Override
     public FloatingView remove() {
@@ -105,9 +70,10 @@ public class FloatingView implements IFloatingView, Handler.Callback {
                 return;
             }
             mEnFloatingView = new EnFloatingView(context.getApplicationContext());
-            mLogView = new LogView(context.getApplicationContext());
-            mLogView.setLayoutParams(getLogParams());
-            mLogView.setVisibility(View.GONE);
+            requestCallVideoView = new RequestCallVideoView(context.getApplicationContext());
+            requestCallVideoView.setLayoutParams(getLogParams());
+            requestCallVideoView.setVisibility(View.GONE);
+            mEnFloatingView.setVisibility(View.GONE);
             mEnFloatingView.setLayoutParams(getParams(context));
             mEnFloatingView.setMagnetViewListener(new MagnetViewListener() {
                 @Override
@@ -117,8 +83,7 @@ public class FloatingView implements IFloatingView, Handler.Callback {
 
                 @Override
                 public void onClick(FloatingMagnetView magnetView) {
-                    // 每次点击都会变化日志状态
-                    changeLogState();
+
                 }
             });
             addViewToWindow(mEnFloatingView);
@@ -126,33 +91,15 @@ public class FloatingView implements IFloatingView, Handler.Callback {
     }
 
 
-    private void changeLogState() {
-        if (mLogView != null) {
-            int i = mLogView.getVisibility();
-            if (i == View.VISIBLE) {
-                mLogView.setVisibility(View.GONE);
-                isStopTimer = true;
-            } else {
-                isStopTimer = false;
-                handler.sendMessage(handler.obtainMessage());
-                mLogView.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     @Override
     public boolean handleMessage(Message msg) {
         final float rate = DeviceInfoManager.getCurProcessCpuRate();
 
-        if (mLogView != null) {
-            mLogView.post(new Runnable() {
+        if (requestCallVideoView != null) {
+            requestCallVideoView.post(new Runnable() {
                 @Override
                 public void run() {
-                    String cpuInfo;
 
-                    cpuInfo = String.format("[ CPU当前使用率: %s%s ]", String.valueOf((int) rate), "%");
-
-                    mLogView.setTxCpuInfo(cpuInfo);
                 }
             });
         }
@@ -200,14 +147,14 @@ public class FloatingView implements IFloatingView, Handler.Callback {
         }
 
         // 避免重复添加View，所以在这里需要remover掉
-        if (mLogView != null && mLogView.getParent() != null) {
-            FrameLayout frameLayout = (FrameLayout) mLogView.getParent();
-            frameLayout.removeView(mLogView);
+        if (requestCallVideoView != null && requestCallVideoView.getParent() != null) {
+            FrameLayout frameLayout = (FrameLayout) requestCallVideoView.getParent();
+            frameLayout.removeView(requestCallVideoView);
         }
 
         mContainer = container;
 
-        container.addView(mLogView);
+        container.addView(requestCallVideoView);
         container.addView(mEnFloatingView);
 
         return this;
@@ -225,8 +172,8 @@ public class FloatingView implements IFloatingView, Handler.Callback {
             container.removeView(mEnFloatingView);
         }
 
-        if (mLogView != null && container != null && ViewCompat.isAttachedToWindow(mLogView)) {
-            container.removeView(mLogView);
+        if (requestCallVideoView != null && container != null && ViewCompat.isAttachedToWindow(requestCallVideoView)) {
+            container.removeView(requestCallVideoView);
         }
 
         if (mContainer == container) {
@@ -244,6 +191,30 @@ public class FloatingView implements IFloatingView, Handler.Callback {
     public FloatingView layoutParams(ViewGroup.LayoutParams params) {
         if (mEnFloatingView != null) {
             mEnFloatingView.setLayoutParams(params);
+        }
+        return this;
+    }
+
+    @Override
+    public FloatingView show() {
+        if (requestCallVideoView != null) {
+            int i = requestCallVideoView.getVisibility();
+            if (i == View.GONE) {
+                requestCallVideoView.setVisibility(View.VISIBLE);
+                isStopTimer = false;
+            }
+        }
+        return this;
+    }
+
+    @Override
+    public FloatingView hidden() {
+        if (requestCallVideoView != null) {
+            int i = requestCallVideoView.getVisibility();
+            if (i == View.VISIBLE) {
+                requestCallVideoView.setVisibility(View.GONE);
+                isStopTimer = true;
+            }
         }
         return this;
     }

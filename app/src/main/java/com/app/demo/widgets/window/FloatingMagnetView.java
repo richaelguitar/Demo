@@ -1,4 +1,4 @@
-package com.app.demo.widgets.log;
+package com.app.demo.widgets.window;
 
 import android.content.Context;
 import android.os.Handler;

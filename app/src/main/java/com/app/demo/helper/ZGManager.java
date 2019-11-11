@@ -1,6 +1,5 @@
-package com.app.demo;
+package com.app.demo.helper;
 
-import com.app.demo.ZGBaseHelper;
 import com.app.demo.util.AppLogger;
 import com.app.demo.util.ZegoUtil;
 import com.zego.zegoavkit2.ZegoExternalVideoCapture;
@@ -20,23 +19,23 @@ public class ZGManager {
 
     public ZegoLiveRoom api() {
         // 判断是否创建了ZegoLiveRoom实例 避免重复初始化sdk
-        if (com.app.demo.ZGBaseHelper.sharedInstance().getZegoLiveRoom() == null) {
+        if (ZGBaseHelper.sharedInstance().getZegoLiveRoom() == null) {
             // 初始化zegoSDK
-            com.app.demo.ZGBaseHelper.sharedInstance().initZegoSDK(ZegoUtil.getAppID(), ZegoUtil.getAppSign(), ZegoUtil.getIsTestEnv(), new IZegoInitSDKCompletionCallback() {
+            ZGBaseHelper.sharedInstance().initZegoSDK(ZegoUtil.getAppID(), ZegoUtil.getAppSign(), ZegoUtil.getIsTestEnv(), new IZegoInitSDKCompletionCallback() {
                 @Override
                 public void onInitSDK(int errorCode) {
                     if (errorCode == 0) {
-                        AppLogger.getInstance().i(com.app.demo.ZGBaseHelper.class, "初始化zegoSDK成功!");
+                        AppLogger.getInstance().i(ZGBaseHelper.class, "初始化zegoSDK成功!");
                     } else {
                         // 如果第一次初始化sdk，并且设备没有联网，会初始化失败。需要重新初始化sdk
-                        AppLogger.getInstance().w(com.app.demo.ZGBaseHelper.class, "初始化zegoSDK失败!!! 错误码 errorCode : %d", errorCode);
+                        AppLogger.getInstance().w(ZGBaseHelper.class, "初始化zegoSDK失败!!! 错误码 errorCode : %d", errorCode);
                     }
                 }
             });
 
         }
 
-        return com.app.demo.ZGBaseHelper.sharedInstance().getZegoLiveRoom();
+        return ZGBaseHelper.sharedInstance().getZegoLiveRoom();
     }
 
 
