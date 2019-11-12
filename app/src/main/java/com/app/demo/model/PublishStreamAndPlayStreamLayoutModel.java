@@ -44,29 +44,29 @@ public class PublishStreamAndPlayStreamLayoutModel {
 
         // 这里使用写死的方式创建12个推流或拉流的模型对象
         StreamidAndViewFlag streamidAndViewFlag0 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer0, streamidAndViewFlag0);
-        StreamidAndViewFlag streamidAndViewFlag1 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer1, streamidAndViewFlag1);
-        StreamidAndViewFlag streamidAndViewFlag2 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer2, streamidAndViewFlag2);
-        StreamidAndViewFlag streamidAndViewFlag3 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer3, streamidAndViewFlag3);
-        StreamidAndViewFlag streamidAndViewFlag4 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer4, streamidAndViewFlag4);
-        StreamidAndViewFlag streamidAndViewFlag5 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer5, streamidAndViewFlag5);
-        StreamidAndViewFlag streamidAndViewFlag6 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer6, streamidAndViewFlag6);
-        StreamidAndViewFlag streamidAndViewFlag7 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer7, streamidAndViewFlag7);
-        StreamidAndViewFlag streamidAndViewFlag8 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer8, streamidAndViewFlag8);
-        StreamidAndViewFlag streamidAndViewFlag9 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer9, streamidAndViewFlag9);
-        StreamidAndViewFlag streamidAndViewFlag10 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer10, streamidAndViewFlag10);
-        StreamidAndViewFlag streamidAndViewFlag11 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer11, streamidAndViewFlag11);
+        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer, streamidAndViewFlag0);
+//        StreamidAndViewFlag streamidAndViewFlag1 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer1, streamidAndViewFlag1);
+//        StreamidAndViewFlag streamidAndViewFlag2 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer2, streamidAndViewFlag2);
+//        StreamidAndViewFlag streamidAndViewFlag3 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer3, streamidAndViewFlag3);
+//        StreamidAndViewFlag streamidAndViewFlag4 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer4, streamidAndViewFlag4);
+//        StreamidAndViewFlag streamidAndViewFlag5 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer5, streamidAndViewFlag5);
+//        StreamidAndViewFlag streamidAndViewFlag6 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer6, streamidAndViewFlag6);
+//        StreamidAndViewFlag streamidAndViewFlag7 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer7, streamidAndViewFlag7);
+//        StreamidAndViewFlag streamidAndViewFlag8 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer8, streamidAndViewFlag8);
+//        StreamidAndViewFlag streamidAndViewFlag9 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer9, streamidAndViewFlag9);
+//        StreamidAndViewFlag streamidAndViewFlag10 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer10, streamidAndViewFlag10);
+//        StreamidAndViewFlag streamidAndViewFlag11 = new StreamidAndViewFlag();
+//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer11, streamidAndViewFlag11);
 
     }
 

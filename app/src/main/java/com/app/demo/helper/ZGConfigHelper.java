@@ -1,10 +1,8 @@
-package com.app.demo;
+package com.app.demo.helper;
 
 
 
 import com.app.demo.util.AppLogger;
-import com.zego.zegoavkit2.audioprocessing.ZegoAudioProcessing;
-import com.zego.zegoavkit2.audioprocessing.ZegoAudioReverbMode;
 import com.zego.zegoavkit2.audioprocessing.ZegoAudioReverbParam;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;

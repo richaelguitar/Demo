@@ -2,8 +2,6 @@ package com.app.demo.util;
 
 import android.util.Log;
 
-import com.app.demo.util.TimeUtil;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -88,7 +86,7 @@ public class AppLogger {
 
         // 之所以通过反射来调用，是为了避免客户在copy代码的时候还需要依赖一堆悬浮日志视图的代码。
         try {
-            Class<?> floatingView = Class.forName("com.app.demo.widgets.log.FloatingView");
+            Class<?> floatingView = Class.forName("com.app.demo.widgets.window.FloatingView");
             Method method = floatingView.getMethod("get");
             Object object = method.invoke(null);
             Method addLogMethod = object.getClass().getMethod("addLog", String.class);
@@ -106,7 +104,7 @@ public class AppLogger {
 
     public void clearLog() {
         try {
-            Class<?> floatingView = Class.forName("com.app.demo.widgets.log.FloatingView");
+            Class<?> floatingView = Class.forName("com.app.demo.widgets.window.FloatingView");
             Method method = floatingView.getMethod("get");
             Object object = method.invoke(null);
             Method addLogMethod = object.getClass().getMethod("clearLog");

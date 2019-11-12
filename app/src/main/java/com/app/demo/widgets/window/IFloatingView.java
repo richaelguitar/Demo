@@ -1,4 +1,4 @@
-package com.app.demo.widgets.log;
+package com.app.demo.widgets.window;
 
 import android.app.Activity;
 import android.view.ViewGroup;
@@ -25,5 +25,9 @@ public interface IFloatingView {
     EnFloatingView getView();
 
     FloatingView layoutParams(ViewGroup.LayoutParams params);
+
+    FloatingView show();
+
+    FloatingView hidden();
 
 }

@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.app.demo.widgets.log.FloatingView;
+import com.app.demo.widgets.window.FloatingView;
 
 /**
  * Created by zego on 2019/2/19.

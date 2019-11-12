@@ -5,21 +5,21 @@ import android.content.Intent;
 
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 
-
 import com.app.demo.databinding.VideoCommunicationMainBinding;
+import com.app.demo.helper.ZGVideoCommunicationHelper;
 import com.app.demo.util.AppLogger;
 
 import com.app.demo.ui.BaseActivity;
 
 
 import java.util.HashMap;
+
 
 
 /**

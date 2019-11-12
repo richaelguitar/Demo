@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">互动视频示例</string>
+    <string name="app_name">互动视频</string>
     <string name="tx_log">LOG</string>
     <string name="tx_web_refresh_hint">正在刷新当前页面</string>
     <string name="menu">菜单</string>

@@ -1,16 +1,13 @@
-package com.app.demo;
+package com.app.demo.helper;
 
 
 import android.app.Application;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.app.demo.ZGPublishHelper;
 import com.app.demo.util.AppLogger;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.IZegoInitSDKCompletionCallback;
-import com.zego.zegoliveroom.callback.IZegoLivePublisherCallback;
 import com.zego.zegoliveroom.callback.IZegoLoginCompletionCallback;
 import com.zego.zegoliveroom.callback.IZegoRoomCallback;
 import com.zego.zegoliveroom.constants.ZegoConstants;
