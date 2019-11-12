@@ -41,12 +41,9 @@
             android:name=".WebViewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".VideoCommunicationMainUI"
+            android:name=".AnchorVideoUI"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".PublishStreamAndPlayStreamUI"
-            android:screenOrientation="portrait" />
-        <activity android:name=".ui.WebActivity"  android:screenOrientation="portrait"/>
+        <activity android:name=".AudienceVideoUI"  android:screenOrientation="portrait"/>
     </application>
 
 

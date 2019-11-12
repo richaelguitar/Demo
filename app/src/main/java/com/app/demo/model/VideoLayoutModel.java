@@ -1,10 +1,11 @@
 package com.app.demo.model;
 
-import android.util.Log;
+import android.app.Activity;
 import android.view.TextureView;
 import android.widget.LinearLayout;
 
-import com.app.demo.PublishStreamAndPlayStreamUI;
+import com.app.demo.AnchorVideoUI;
+import com.app.demo.R;
 
 
 import java.util.ArrayList;
@@ -15,13 +16,13 @@ import java.util.LinkedHashMap;
  * 本类为视频通话的推拉流UI布局Model类，由于与业务强相关，实现方式可不相同，这里仅作为示例参考用，业务应根据自己的需求自己实现
  *
  */
-public class PublishStreamAndPlayStreamLayoutModel {
+public class VideoLayoutModel {
 
     private ArrayList<LinearLayout> arrayListLinearLayout = new ArrayList<>();
 
     private LinkedHashMap<LinearLayout, StreamidAndViewFlag> linearLayoutHasViewLinkedHashMap = new LinkedHashMap<>();
 
-    PublishStreamAndPlayStreamUI mPublishStreamAndPlayStreamUI;
+    Activity activity;
 
 
     /**
@@ -38,35 +39,13 @@ public class PublishStreamAndPlayStreamLayoutModel {
         }
     }
 
-    public PublishStreamAndPlayStreamLayoutModel(PublishStreamAndPlayStreamUI publishStreamAndPlayStreamUI){
+    public VideoLayoutModel(Activity activity){
 
-        mPublishStreamAndPlayStreamUI = publishStreamAndPlayStreamUI;
-
+        this.activity = activity;
+        LinearLayout llViewContainer = activity.findViewById(R.id.ll_view_container);
         // 这里使用写死的方式创建12个推流或拉流的模型对象
         StreamidAndViewFlag streamidAndViewFlag0 = new StreamidAndViewFlag();
-        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer, streamidAndViewFlag0);
-//        StreamidAndViewFlag streamidAndViewFlag1 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer1, streamidAndViewFlag1);
-//        StreamidAndViewFlag streamidAndViewFlag2 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer2, streamidAndViewFlag2);
-//        StreamidAndViewFlag streamidAndViewFlag3 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer3, streamidAndViewFlag3);
-//        StreamidAndViewFlag streamidAndViewFlag4 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer4, streamidAndViewFlag4);
-//        StreamidAndViewFlag streamidAndViewFlag5 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer5, streamidAndViewFlag5);
-//        StreamidAndViewFlag streamidAndViewFlag6 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer6, streamidAndViewFlag6);
-//        StreamidAndViewFlag streamidAndViewFlag7 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer7, streamidAndViewFlag7);
-//        StreamidAndViewFlag streamidAndViewFlag8 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer8, streamidAndViewFlag8);
-//        StreamidAndViewFlag streamidAndViewFlag9 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer9, streamidAndViewFlag9);
-//        StreamidAndViewFlag streamidAndViewFlag10 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer10, streamidAndViewFlag10);
-//        StreamidAndViewFlag streamidAndViewFlag11 = new StreamidAndViewFlag();
-//        linearLayoutHasViewLinkedHashMap.put(publishStreamAndPlayStreamUI.getPublishStreamAndPlayStreamBinding().llViewContainer11, streamidAndViewFlag11);
+        linearLayoutHasViewLinkedHashMap.put(llViewContainer, streamidAndViewFlag0);
 
     }
 
@@ -78,7 +57,7 @@ public class PublishStreamAndPlayStreamLayoutModel {
      */
     public TextureView addStreamToViewInLayout(String streamid){
 
-        TextureView renderView = new TextureView(this.mPublishStreamAndPlayStreamUI);
+        TextureView renderView = new TextureView(activity);
 
         for(LinearLayout linearLayout : this.linearLayoutHasViewLinkedHashMap.keySet()){
 

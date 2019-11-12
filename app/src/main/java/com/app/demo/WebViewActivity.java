@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import com.app.demo.basic.BasicWebViewActivity;
-import com.app.demo.widget.WebViewProgressBar;
+import com.app.demo.widgets.WebViewProgressBar;
 
 import org.apache.cordova.engine.SystemWebView;
 
@@ -27,7 +27,7 @@ public class WebViewActivity extends BasicWebViewActivity {
 
 
 
-    private String mUrl = "http://m.baidu.com";
+    private String mUrl = "http://baidu.com";
 
     @Override
     public void getBundleExtras(Bundle bundle) {

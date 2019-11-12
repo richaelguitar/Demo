@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.app.demo.ui.BaseActivity;
 import com.app.demo.ui.WebActivity;
+import com.zego.zegoliveroom.constants.ZegoConstants;
 
 
 /**
@@ -26,19 +27,33 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.btn_start_webview).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(MainActivity.this,WebViewActivity.class));
-                WebActivity.actionStart(MainActivity.this,"https://m.baidu.com","百度一下");
+                startActivity(new Intent(MainActivity.this,WebViewActivity.class));
             }
         });
 
-        //发起视频
-        findViewById(R.id.btn_call_video).setOnClickListener(new View.OnClickListener() {
+        //主播开播
+        findViewById(R.id.btn_anchor_video).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                boolean isPremission = checkOrRequestPermission(REQUEST_PERMISSION_CODE);
                if(isPremission){
-                   startActivity(new Intent(MainActivity.this, VideoCommunicationMainUI.class));
+                   Intent intent = new Intent(MainActivity.this, AnchorVideoUI.class);
+                   intent.putExtra("roomID","10000086");
+                   startActivity(intent);
                }
+            }
+        });
+
+        //观众进入
+        findViewById(R.id.btn_audience_video).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isPremission = checkOrRequestPermission(REQUEST_PERMISSION_CODE);
+                if(isPremission){
+                    Intent intent = new Intent(MainActivity.this, AudienceVideoUI.class);
+                    intent.putExtra("roomID","10000086");
+                    startActivity(intent);
+                }
             }
         });
 

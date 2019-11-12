@@ -10,8 +10,14 @@
         android:text="进入h5"/>
 
     <Button
-        android:id="@+id/btn_call_video"
+        android:id="@+id/btn_anchor_video"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="发起视频"/>
+        android:text="主播开播"/>
+
+    <Button
+        android:id="@+id/btn_audience_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="观众进入"/>
 </LinearLayout>

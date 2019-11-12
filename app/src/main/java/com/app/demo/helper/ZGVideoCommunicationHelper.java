@@ -12,6 +12,7 @@ import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.IZegoInitSDKCompletionCallback;
 import com.zego.zegoliveroom.callback.IZegoLivePublisherCallback;
 import com.zego.zegoliveroom.callback.IZegoLoginCompletionCallback;
+import com.zego.zegoliveroom.callback.IZegoResponseCallback;
 import com.zego.zegoliveroom.callback.IZegoRoomCallback;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;
 import com.zego.zegoliveroom.constants.ZegoConstants;
@@ -52,6 +53,10 @@ public class ZGVideoCommunicationHelper {
     private boolean mZgCameraState = true;
 
     private ZGVideoCommunicationHelperCallback mCallback;
+
+    private ZGVideoAnchorLiveHelperCallback mAnchorCallback;//主播回调
+
+    private ZGVideoAudienceHelperCallback mAudienceCallback;//观众回调
 
     // 记录SDK的初始化状态
     private ZGSDKInitState zgsdkInitState = ZGSDKInitState.WaitInitState;
@@ -167,6 +172,46 @@ public class ZGVideoCommunicationHelper {
         zegoLiveRoom.setAVConfig(mZegoAvConfig);
     }
 
+    /**
+     * 观众发出连麦请求
+     */
+    public void requestJoinLive(String roomID){
+
+        if (getZgsdkInitState() != ZGVideoCommunicationHelper.ZGSDKInitState.InitSuccessState) {
+            AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "登陆失败: 请先InitSdk");
+            return;
+        }
+
+        zegoLiveRoom.requestJoinLive(new IZegoResponseCallback() {
+            @Override
+            public void onResponse(int seq, String toUserId, String userName) {
+                if(mAudienceCallback!=null){
+                    mAudienceCallback.onJoinLiveResponse(seq,toUserId,userName,roomID);
+                }
+            }
+        });
+    }
+
+    /**
+     * 主播发出连麦请求
+     */
+    public void inviteJoinLive(String targetUserID,String roomID){
+
+        if (getZgsdkInitState() != ZGVideoCommunicationHelper.ZGSDKInitState.InitSuccessState) {
+            AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "登陆失败: 请先InitSdk");
+            return;
+        }
+
+        zegoLiveRoom.inviteJoinLive(targetUserID, new IZegoResponseCallback() {
+            @Override
+            public void onResponse(int seq, String fromUserId, String userName) {
+                if(mAnchorCallback!=null){
+                    mAnchorCallback.onInviteJoinLiveResponse(seq,fromUserId,userName,roomID);
+                }
+            }
+        });
+    }
+
 
     /**
      * 开始实时视频通话
@@ -193,7 +238,6 @@ public class ZGVideoCommunicationHelper {
                 // 当 zegoStreamInfos 为 null 时说明当前房间没有人推流
 
                 if(0 == i){
-
                     if(zegoStreamInfos.length < 12){
                         for(ZegoStreamInfo zegoStreamInfo : zegoStreamInfos){
                             AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "房间内收到流新增通知. streamID : %s, userName : %s, extraInfo : %s", zegoStreamInfo.streamID, zegoStreamInfo.userName, zegoStreamInfo.extraInfo);
@@ -206,7 +250,6 @@ public class ZGVideoCommunicationHelper {
                         AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "房间已满人，目前demo只展示12人通讯");
                         mCallback.onLoginRoomFailed(NUMBER_OF_PEOPLE_EXCEED_LIMIT);
                     }
-
 
                 }else {
 
@@ -271,6 +314,42 @@ public class ZGVideoCommunicationHelper {
         void removeRenderViewByStreamDelete(ZegoStreamInfo listStream);
         void onLoginRoomFailed(int errorcode);
         void onPublishStreamFailed(int errorcode);
+    }
+
+    /**
+     * 观众连麦请求回调
+     */
+    public interface ZGVideoAudienceHelperCallback extends ZGVideoCommunicationHelperCallback{
+
+        int NUMBER_OF_PEOPLE_EXCEED_LIMIT = 1;
+
+        void onJoinLiveResponse(int seq,String fromUserID, String fromUserName, String roomID);
+    }
+
+    /**
+     * 主播连麦请求回调
+     */
+    public interface ZGVideoAnchorLiveHelperCallback extends ZGVideoCommunicationHelperCallback{
+
+        int NUMBER_OF_PEOPLE_EXCEED_LIMIT = 1;
+
+        void onInviteJoinLiveResponse(int seq,String fromUserID, String fromUserName, String roomID);
+    }
+
+    /**
+     * 设置主播回调代理
+     * @param mAnchorCallback
+     */
+    public void setmAnchorCallback(ZGVideoAnchorLiveHelperCallback mAnchorCallback) {
+        this.mAnchorCallback = mAnchorCallback;
+    }
+
+    /**
+     * 设置观众回调代理
+     * @param mAudienceCallback
+     */
+    public void setmAudienceCallback(ZGVideoAudienceHelperCallback mAudienceCallback) {
+        this.mAudienceCallback = mAudienceCallback;
     }
 
     /**
@@ -429,7 +508,8 @@ public class ZGVideoCommunicationHelper {
             }
 
             @Override
-            public void onJoinLiveRequest(int i, String s, String s1, String s2) {
+            public void onJoinLiveRequest(int seq, String fromUserID, String fromUserName, String roomID) {
+                //有进行连麦请求的时候进入
 
             }
 

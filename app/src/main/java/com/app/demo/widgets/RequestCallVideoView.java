@@ -1,8 +1,6 @@
 package com.app.demo.widgets;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -12,7 +10,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 
-import com.app.demo.PublishStreamAndPlayStreamUI;
 import com.app.demo.R;
 
 import com.app.demo.util.AppLogger;
