@@ -73,7 +73,6 @@ public class FloatingView implements IFloatingView, Handler.Callback {
             requestCallVideoView = new RequestCallVideoView(context.getApplicationContext());
             requestCallVideoView.setLayoutParams(getLogParams());
             requestCallVideoView.setVisibility(View.GONE);
-            mEnFloatingView.setVisibility(View.GONE);
             mEnFloatingView.setLayoutParams(getParams(context));
             mEnFloatingView.setMagnetViewListener(new MagnetViewListener() {
                 @Override
@@ -154,7 +153,7 @@ public class FloatingView implements IFloatingView, Handler.Callback {
 
         mContainer = container;
 
-        container.addView(requestCallVideoView);
+//        container.addView(requestCallVideoView);
         container.addView(mEnFloatingView);
 
         return this;

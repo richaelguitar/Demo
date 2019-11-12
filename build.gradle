@@ -19,6 +19,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        //添加下面的仓库地址
+        maven { url "https://jitpack.io" }
     }
 }
 

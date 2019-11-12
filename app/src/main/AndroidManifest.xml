@@ -41,9 +41,22 @@
             android:name=".WebViewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".AnchorVideoUI"
+            android:name=".CommunicationVideoUI"
             android:screenOrientation="portrait" />
-        <activity android:name=".AudienceVideoUI"  android:screenOrientation="portrait"/>
+
+        <service
+            android:name=".schedule.ReflushDataService"
+            android:enabled="true"
+            android:exported="true" />
+        <service
+            android:name=".schedule.ScheduleExecuteService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name=".schedule.ReflushDataService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 

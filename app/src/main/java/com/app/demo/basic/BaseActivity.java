@@ -1,4 +1,4 @@
-package com.app.demo.ui;
+package com.app.demo.basic;
 
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -23,21 +23,6 @@ public class BaseActivity extends AppCompatActivity {
 
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // 在应用内实现悬浮窗，需要依附Activity生命周期
-        FloatingView.get().attach(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // // 在应用内实现悬浮窗，需要依附Activity生命周期
-        FloatingView.get().detach(this);
-    }
 
     // 需要申请 麦克风权限-读写sd卡权限-摄像头权限
     private static String[] PERMISSIONS_STORAGE = {

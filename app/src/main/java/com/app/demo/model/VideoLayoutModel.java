@@ -1,11 +1,13 @@
 package com.app.demo.model;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.TextureView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import com.app.demo.AnchorVideoUI;
 import com.app.demo.R;
+import com.app.demo.widgets.window.FloatingView;
 
 
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import java.util.LinkedHashMap;
  */
 public class VideoLayoutModel {
 
-    private ArrayList<LinearLayout> arrayListLinearLayout = new ArrayList<>();
+    private ArrayList<String> streamIds = new ArrayList<>();
 
     private LinkedHashMap<LinearLayout, StreamidAndViewFlag> linearLayoutHasViewLinkedHashMap = new LinkedHashMap<>();
 
@@ -43,7 +45,12 @@ public class VideoLayoutModel {
 
         this.activity = activity;
         LinearLayout llViewContainer = activity.findViewById(R.id.ll_view_container);
-        // 这里使用写死的方式创建12个推流或拉流的模型对象
+        // 这里使用写死的方式创建2个推流或拉流的模型对象
+
+        LinearLayout llHeaderViewContainer = FloatingView.get().getView().findViewById(R.id.ll_header_view);
+        StreamidAndViewFlag streamidAndViewFlag1 = new StreamidAndViewFlag();
+        linearLayoutHasViewLinkedHashMap.put(llHeaderViewContainer, streamidAndViewFlag1);
+
         StreamidAndViewFlag streamidAndViewFlag0 = new StreamidAndViewFlag();
         linearLayoutHasViewLinkedHashMap.put(llViewContainer, streamidAndViewFlag0);
 
@@ -58,7 +65,7 @@ public class VideoLayoutModel {
     public TextureView addStreamToViewInLayout(String streamid){
 
         TextureView renderView = new TextureView(activity);
-
+        Log.d("StreamId",""+streamid);
         for(LinearLayout linearLayout : this.linearLayoutHasViewLinkedHashMap.keySet()){
 
             if(this.linearLayoutHasViewLinkedHashMap.get(linearLayout).layoutHasViewFlag == false){
@@ -70,10 +77,8 @@ public class VideoLayoutModel {
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
                 linearLayout.addView(renderView, layoutParams);
                 break;
-
             }
         }
-
         return renderView;
 
     }

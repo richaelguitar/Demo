@@ -40,9 +40,6 @@ public class App extends MultiDexApplication {
         String userId = DeviceInfoManager.generateDeviceId(this) + randomSuffix;
         String userName = DeviceInfoManager.getProductName() + randomSuffix;
 
-        // 添加悬浮日志视图
-        FloatingView.get().add();
-
         // 使用Zego sdk前必须先设置SDKContext。
         ZGBaseHelper.sharedInstance().setSDKContextEx(userId, userName, null, null, 10 * 1024 * 1024, this);
 
