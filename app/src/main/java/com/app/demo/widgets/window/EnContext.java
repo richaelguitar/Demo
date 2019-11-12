@@ -7,7 +7,7 @@ import com.app.demo.App;
 
 public class EnContext {
 
-    private static final Application INSTANCE = App.App;
+    private static final Application INSTANCE = App.application;
 
 
     public static Application get() {

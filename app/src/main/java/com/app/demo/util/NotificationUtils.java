@@ -46,13 +46,13 @@ public class NotificationUtils {
         mBuilder.setContentTitle(msg.getValues().get("title"))
                 .setContentText(msg.getValues().get("content"))
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setTicker(msg.getValues().get("msg"))
+                .setTicker(msg.getValues().get("userId"))
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true);
 
         Notification notification = mBuilder.build();
-        PendingIntent clickPendingIntent = getClickPendingIntent(context,msg.getValues().get("roomID"));
+        PendingIntent clickPendingIntent = getClickPendingIntent(context,msg.getValues().get("roomId"),msg.getValues().get("userId"));
         notification.contentIntent = clickPendingIntent;
         manager.notify(id, notification);
     }
@@ -71,9 +71,10 @@ public class NotificationUtils {
      * @param context
      * @return
      */
-    public static PendingIntent getClickPendingIntent(Context context,String id) {
+    public static PendingIntent getClickPendingIntent(Context context,String roomId,String userId) {
         Intent clickIntent = new Intent(context, CommunicationVideoUI.class);
-        clickIntent.putExtra("roomID",id);
+        clickIntent.putExtra("roomId",roomId);
+        clickIntent.putExtra("userId",userId);
         return PendingIntent.getActivity(context,
                 (int) (System.currentTimeMillis()),
                 clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);

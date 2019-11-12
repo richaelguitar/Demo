@@ -17,20 +17,23 @@ public class Const {
     //基础接口
     public static final String APP_BASE_URL= BuildConfig.BASE_URL;
 
+    ////创建房间
+    public static final String CREATE_ROOM_URL=APP_BASE_URL+"/api/createOlineRoom";
 
-    //获取最新发布数据
-    public static final String USER_DATA_URL=APP_BASE_URL+"/addLoginInfoAction";
+    //根据用户id获取房间信息
+    public static final String GET_ROOM_BY_USERID_URL=APP_BASE_URL+"/api/getOnlineRoomByUserId";
+
+    //根据房间id获取房间信息
+    public static final String GET_ROOM_BY_ROOMID_URL=APP_BASE_URL+"/api/getOnlineRoomByRoomId?roomId=r123456789";
+
+    //删除房间
+    public static final String DELETE_ROOM_URL=APP_BASE_URL+"/api/deleteOnlineRoom?roomId=r123456789";
 
     public static String MESSAGE_RECEIVER_ACTION="com.local.message.receiverMsg";//接受消息Action
 
     public static String MESSAGE_KEY="msgKey";//消息key
 
-    public static final String NOTIFICATION_CHANNEL_ID="WarningNotification";
-
-    public static final String GET_DEVICE_URL=APP_BASE_URL+"/getDeviceInfoListAction";//获取设备列表
-
-
-    public static final String GET_BIND_DEVICE_URL=APP_BASE_URL+"/bindDeviceAction";//绑定设备
+    public static final String NOTIFICATION_CHANNEL_ID="Notification";
 
 
 

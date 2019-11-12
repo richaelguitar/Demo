@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * 主播视频页面，连麦功能
+ * 视频页面
  */
 public class CommunicationVideoUI extends BaseActivity {
 
@@ -35,6 +35,7 @@ public class CommunicationVideoUI extends BaseActivity {
      * @return
      */
 
+
     public  CallVideoBeforeBinding getCallVideoBeforeBinding() {
         return callVideoBeforeBinding;
     }
@@ -42,8 +43,8 @@ public class CommunicationVideoUI extends BaseActivity {
     //这里使用Google官方的MVVM框架DataBinding来实现UI逻辑，开发者可以根据自己的情况使用别的方式编写UI逻辑
     private CallVideoBeforeBinding   callVideoBeforeBinding;
 
-    // 这里为防止多个设备测试时相同流id冲推导致的推流失败，这里使用时间戳的后4位来作为随机的流id，开发者可根据业务需要定义业务上的流id
-    private String mPublishStreamid = "s-streamid-10002";//+ new Date().getTime()%(new Date().getTime()/10000);
+    // 这里为防止多个设备测试时相同流id冲推导致的推流失败，这里使用前缀"s-streamid-"+用户id作为标识
+    private String mPublishStreamid;//+ new Date().getTime()%(new Date().getTime()/10000);
 
     // 推拉流布局模型
     VideoLayoutModel mVideoLayoutModel;
@@ -78,8 +79,8 @@ public class CommunicationVideoUI extends BaseActivity {
 
         // 从VideoCommunicationMainUI的Activtity中获取传过来的RoomID，以便登录登录房间并马上推流
         Intent it = getIntent();
-        String roomid = it.getStringExtra("roomID");
-
+        String roomid = it.getStringExtra("roomId");
+        mPublishStreamid = "s-streamid-"+it.getStringExtra("userId");
 
         ZGVideoCommunicationHelper.sharedInstance().setZGVideoCommunicationHelperCallback( new ZGVideoCommunicationHelper.ZGVideoCommunicationHelperCallback(){
 
@@ -91,7 +92,7 @@ public class CommunicationVideoUI extends BaseActivity {
                 if(!playStreamids.contains(listStream.streamID)){
                     CommunicationVideoUI.this.playStreamids.add(listStream.streamID);
                 }
-                if(playStreamids.size() == 2){
+                if(playStreamids.size() <= 2){
                     callVideoBeforeBinding.tvStateDesc.setText("视频通话中");
                 }
                 return playRenderView;

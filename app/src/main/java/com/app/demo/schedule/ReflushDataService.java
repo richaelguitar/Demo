@@ -3,16 +3,23 @@ package com.app.demo.schedule;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.widget.Toast;
+
+import okhttp3.Call;
 
 
 import androidx.annotation.Nullable;
 
+import com.app.demo.CommunicationVideoUI;
+import com.app.demo.UserListActivity;
+import com.app.demo.entity.MessageInfo;
+import com.app.demo.entity.Result;
 import com.app.demo.util.Const;
 import com.app.demo.util.LoginUtils;
+import com.app.demo.util.NotificationUtils;
+import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
-
-
 
 
 /**
@@ -30,22 +37,33 @@ public class ReflushDataService extends Service {
 
     private void reflushData() {
         //获取userId
-//        int loginId = LoginUtils.getLoginInfo(this).getInt("userId",0);
-//                    OkHttpUtils.get()
-//                    .url(Const.GET_DEVICE_URL)
-//                    .addParams("userId", ""+loginId)
-//                    .build()
-//                    .execute(new StringCallback() {
-//                        @Override
-//                        public void onError(Call call, Exception e, int id) {
-//
-//                        }
-//
-//                        @Override
-//                        public void onResponse(String response, int id) {
-//
-//                        }
-//                    });
+        int loginId = LoginUtils.getLoginInfo(this).getInt("userId",666666);
+                    OkHttpUtils.get()
+                    .url(Const.GET_ROOM_BY_USERID_URL)
+                    .addParams("userId", ""+loginId)
+                    .build()
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+
+                        }
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            Result result = new Gson().fromJson(response,Result.class);
+                            if("200".equals(result.getCode())){
+                                if(result.getData()!=null){
+                                    MessageInfo messageInfo = new MessageInfo();
+                                    messageInfo.getValues().put("title","视频请求");
+                                    messageInfo.getValues().put("content","邀请您视频通话");
+                                    messageInfo.getValues().put("roomId",result.getData().getRoomId());
+                                    messageInfo.getValues().put("userId",result.getData().getUserId());
+                                    //发出视频通知
+                                    NotificationUtils.showDefaultNotification(messageInfo,ReflushDataService.this);
+                                }
+                            }
+                        }
+                    });
     }
 
     @Nullable

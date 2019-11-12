@@ -33,7 +33,7 @@ public class PreferenceUtil {
     private SharedPreferences mSharedPreferences;
 
     private PreferenceUtil() {
-        mSharedPreferences = App.App.getSharedPreferences(SHARE_PREFERENCE_NAME, AppCompatActivity.MODE_PRIVATE);
+        mSharedPreferences = App.application.getSharedPreferences(SHARE_PREFERENCE_NAME, AppCompatActivity.MODE_PRIVATE);
     }
 
     public static PreferenceUtil getInstance() {

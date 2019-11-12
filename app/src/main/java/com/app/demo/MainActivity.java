@@ -20,7 +20,9 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
+        //检查权限
 
+        checkOrRequestPermission(REQUEST_PERMISSION_CODE);
         // 初始化 ZGVideoCommunicationHelper 实例
         ZGVideoCommunicationHelper.sharedInstance().initZGVideoCommunicationHelper();
 
@@ -33,15 +35,15 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        //主播开播
+        //用户列表
         findViewById(R.id.btn_user_page).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-               boolean isPremission = checkOrRequestPermission(REQUEST_PERMISSION_CODE);
+               boolean isPremission =checkOrRequestPermission(REQUEST_PERMISSION_CODE);
                if(isPremission){
-                   Intent intent = new Intent(MainActivity.this, CommunicationVideoUI.class);
-                   intent.putExtra("roomID","100086");
+                   Intent intent = new Intent(MainActivity.this, UserListActivity.class);
+                   intent.putExtra("roomId","r1234567891");
                    startActivity(intent);
                }
             }
