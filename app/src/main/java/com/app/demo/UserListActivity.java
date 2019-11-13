@@ -83,7 +83,7 @@ public class UserListActivity extends BaseActivity {
         OkHttpUtils.get()
                 .url(Const.CREATE_ROOM_URL)
                 .addParams("room_id", ""+room.getRoom_id())
-                .addParams("user_id", ""+room.getProducer())
+                .addParams("user_id", LoginUtils.getLoginInfo(this).getString("userId","7"))
                 .build()
                 .execute(new StringCallback() {
                     @Override
