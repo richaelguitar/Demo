@@ -69,6 +69,7 @@ public class CommunicationVideoUI extends BaseActivity {
         callVideoBeforeBinding.ivCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(CommunicationVideoUI.this,"通话结束",Toast.LENGTH_SHORT).show();
                 CommunicationVideoUI.this.onBackPressed();
             }
         });
@@ -123,6 +124,7 @@ public class CommunicationVideoUI extends BaseActivity {
                 CommunicationVideoUI.this.mVideoLayoutModel.removeStreamToViewInLayout(streamInfo.streamID);
                 CommunicationVideoUI.this.playStreamids.remove(streamInfo.streamID);
                 Toast.makeText(CommunicationVideoUI.this,"对方已挂断",Toast.LENGTH_SHORT).show();
+                finish();
             }
 
         });

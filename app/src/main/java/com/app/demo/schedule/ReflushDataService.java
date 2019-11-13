@@ -10,6 +10,7 @@ import okhttp3.Call;
 
 import androidx.annotation.Nullable;
 
+import com.app.demo.App;
 import com.app.demo.CommunicationVideoUI;
 import com.app.demo.UserListActivity;
 import com.app.demo.entity.MessageInfo;
@@ -52,14 +53,15 @@ public class ReflushDataService extends Service {
                         public void onResponse(String response, int id) {
                             Result result = new Gson().fromJson(response,Result.class);
                             if("200".equals(result.getCode())){
-                                if(result.getData()!=null){
+                                if(result.getData()!=null&& !App.application.getNotificationRoomList().contains(result.getData().getRoomId())){
                                     MessageInfo messageInfo = new MessageInfo();
                                     messageInfo.getValues().put("title","视频请求");
-                                    messageInfo.getValues().put("content","邀请您视频通话");
+                                    messageInfo.getValues().put("content","用户："+result.getData().getUserId()+"邀请您视频通话");
                                     messageInfo.getValues().put("roomId",result.getData().getRoomId());
                                     messageInfo.getValues().put("userId",result.getData().getUserId());
                                     //发出视频通知
                                     NotificationUtils.showDefaultNotification(messageInfo,ReflushDataService.this);
+                                    App.application.getNotificationRoomList().add(result.getData().getRoomId());
                                 }
                             }
                         }

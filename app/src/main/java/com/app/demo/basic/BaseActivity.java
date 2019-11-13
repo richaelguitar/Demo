@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.app.demo.App;
 import com.app.demo.widgets.window.FloatingView;
 
 /**
@@ -44,4 +45,9 @@ public class BaseActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        App.application.getNotificationRoomList().clear();//清空内存存储的所有的视频通知
+    }
 }

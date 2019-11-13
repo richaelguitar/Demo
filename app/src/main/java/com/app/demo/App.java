@@ -16,7 +16,9 @@ import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.log.LoggerInterceptor;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -36,7 +38,13 @@ public class App extends MultiDexApplication {
         MultiDex.install(this);
     }
 
-    public static Application application;
+    public static App application;
+
+    private List<String>  notificationRoomList = new ArrayList<>();
+
+    public List<String> getNotificationRoomList() {
+        return notificationRoomList;
+    }
 
     @Override
     public void onCreate() {

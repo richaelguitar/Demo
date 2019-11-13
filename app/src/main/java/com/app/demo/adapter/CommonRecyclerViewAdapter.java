@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.common.basic.CommonViewHolder;
 
 import java.util.List;
 

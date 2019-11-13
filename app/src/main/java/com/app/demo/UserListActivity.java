@@ -1,27 +1,21 @@
 package com.app.demo;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.demo.adapter.CommonRecyclerViewAdapter;
+import com.app.demo.adapter.CommonViewHolder;
 import com.app.demo.adapter.RecycleViewDivider;
 import com.app.demo.basic.BaseActivity;
 import com.app.demo.entity.Result;
-import com.app.demo.entity.Room;
 import com.app.demo.util.Const;
-import com.common.basic.CommonViewHolder;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
