@@ -41,12 +41,11 @@ public class UserListActivity extends BaseActivity {
         recyclerView.setLayoutManager(manager);
         recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new RecycleViewDivider(this,LinearLayoutManager.VERTICAL));
-        String roomId = "room"+new Date().getTime();
         String userId = LoginUtils.getLoginInfo(this).getString("userId","222222");
         if("7".equalsIgnoreCase(userId)){
-            roomList.add(new Result.DataBean(8,roomId));
+            roomList.add(new Result.DataBean(8));
         }else{
-            roomList.add(new Result.DataBean(7,roomId));
+            roomList.add(new Result.DataBean(7));
         }
 
 
@@ -82,7 +81,7 @@ public class UserListActivity extends BaseActivity {
         //发出请求
         OkHttpUtils.get()
                 .url(Const.CREATE_ROOM_URL)
-                .addParams("room_id", ""+room.getRoom_id())
+                .addParams("room_id", "room"+new Date().getTime())
                 .addParams("user_id", LoginUtils.getLoginInfo(this).getString("userId","7"))
                 .build()
                 .execute(new StringCallback() {

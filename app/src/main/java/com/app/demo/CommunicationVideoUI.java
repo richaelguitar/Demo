@@ -19,6 +19,7 @@ import com.app.demo.model.VideoLayoutModel;
 
 import com.app.demo.basic.BaseActivity;
 import com.app.demo.util.Const;
+import com.app.demo.util.LoginUtils;
 import com.app.demo.widgets.window.FloatingView;
 import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
@@ -71,7 +72,7 @@ public class CommunicationVideoUI extends BaseActivity {
         // 从VideoCommunicationMainUI的Activtity中获取传过来的RoomID，以便登录登录房间并马上推流
         Intent it = getIntent();
         String roomid = it.getStringExtra("roomId");
-
+        String userId = LoginUtils.getLoginInfo(this).getString("userId","7");
         action = it.getStringExtra(Const.ACTION_TYPE);
         if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求
             callVideoBeforeBinding.llAcceptVideo.setVisibility(View.GONE);
@@ -81,7 +82,6 @@ public class CommunicationVideoUI extends BaseActivity {
             callVideoBeforeBinding.llRequestVideo.setVisibility(View.GONE);
             callVideoBeforeBinding.llVideoing.setVisibility(View.GONE);
         }
-        ZGVideoCommunicationHelper.sharedInstance().enableMic(false);
 
         ZGVideoCommunicationHelper.sharedInstance().setZGVideoCommunicationHelperCallback( new ZGVideoCommunicationHelper.ZGVideoCommunicationHelperCallback(){
 
@@ -121,8 +121,11 @@ public class CommunicationVideoUI extends BaseActivity {
 
             @Override
             public void onPublishStreamFailed(int errorcode){
-
-                Toast.makeText(CommunicationVideoUI.this, "开启视频通话失败，检查网络", Toast.LENGTH_LONG).show();
+                String message = "开启视频通话失败，检查网络";
+                if(errorcode == 10000105){
+                    message="请检查是否已成功登录房间!";
+                }
+                Toast.makeText(CommunicationVideoUI.this,message, Toast.LENGTH_LONG).show();
                 onBackPressed();
 
             }
@@ -170,7 +173,6 @@ public class CommunicationVideoUI extends BaseActivity {
         callVideoBeforeBinding.ivCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("aaaa","======点击了=========");
                 // 这里进入当前Activty之后马上登录房间，在登录房间的回调中，若房间已经有其他流在推，从登录回调中获取拉流信息并拉这些流
                 ZGVideoCommunicationHelper.sharedInstance().startVideoCommunication(roomid,localPreviewView, mPublishStreamid);
             }

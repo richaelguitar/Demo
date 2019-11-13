@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.app.demo.util.AppLogger;
+import com.app.demo.util.LoginUtils;
 import com.app.demo.util.ZegoUtil;
 import com.zego.zegoliveroom.ZegoLiveRoom;
 import com.zego.zegoliveroom.callback.IZegoInitSDKCompletionCallback;
@@ -187,7 +188,7 @@ public class ZGVideoCommunicationHelper {
             return;
         }
         AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "开始登陆房间!");
-        zegoLiveRoom.loginRoom(roomID, ZegoConstants.RoomRole.Anchor, new IZegoLoginCompletionCallback() {
+        zegoLiveRoom.loginRoom(roomID,ZegoConstants.RoomRole.Anchor, new IZegoLoginCompletionCallback() {
             @Override
             public void onLoginCompletion(int i, ZegoStreamInfo[] zegoStreamInfos) {
                 // zegoStreamInfos，内部封装了 userID、userName、streamID 和 extraInfo。

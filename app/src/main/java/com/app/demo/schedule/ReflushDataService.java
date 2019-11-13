@@ -3,6 +3,7 @@ package com.app.demo.schedule;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import okhttp3.Call;
@@ -40,7 +41,7 @@ public class ReflushDataService extends Service {
 
     private void reflushData() {
         //获取userId
-        String loginId = LoginUtils.getLoginInfo(this).getString("userId","666666");
+        String loginId = LoginUtils.getLoginInfo(this).getString("userId","8");
                     OkHttpUtils.get()
                     .url(Const.GET_ROOM_BY_USERID_URL)
                     .addParams("user_id", loginId)
@@ -55,7 +56,7 @@ public class ReflushDataService extends Service {
                         public void onResponse(String response, int id) {
                             Result result = new Gson().fromJson(response,Result.class);
                             if(result.getCode() == 200){
-                                if(result.getData()!=null&& !App.application.getNotificationRoomList().contains(result.getData().getRoom_id())){
+                                if(result.getData()!=null&& !TextUtils.isEmpty(result.getData().getRoom_id())){
                                     //判断app是否在前台
                                     boolean isForeground = BuildConfig.APPLICATION_ID.equalsIgnoreCase(DeviceInfoManager.getTopActivityPackageName(getApplication()));
                                     if(isForeground){

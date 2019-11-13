@@ -38,9 +38,8 @@ public class Result {
     }
 
     public static class DataBean {
-        public DataBean(int consumer, String room_id) {
+        public DataBean(int consumer) {
             this.consumer = consumer;
-            this.room_id = room_id;
         }
 
         /**

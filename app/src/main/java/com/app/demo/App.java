@@ -17,10 +17,12 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.log.LoggerInterceptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 
 /**
@@ -52,6 +54,10 @@ public class App extends MultiDexApplication {
         application = this;
         //初始化网络请求框架参数配置
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectionSpecs(Arrays.asList(
+                        ConnectionSpec.MODERN_TLS,
+                        ConnectionSpec.COMPATIBLE_TLS,
+                        ConnectionSpec.CLEARTEXT) )
                 .addInterceptor(new LoggerInterceptor(TAG))//设置日志拦截器
                 .connectTimeout(10000L, TimeUnit.MILLISECONDS)
                 .readTimeout(10000L, TimeUnit.MILLISECONDS)
