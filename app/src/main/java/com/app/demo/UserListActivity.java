@@ -63,6 +63,7 @@ public class UserListActivity extends BaseActivity {
                     viewHolder.getView(R.id.btn_call_video).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            room.setRoom_id("room"+new Date().getTime());
                             sendCallNotification(room);
                         }
                     });
@@ -81,7 +82,7 @@ public class UserListActivity extends BaseActivity {
         //发出请求
         OkHttpUtils.get()
                 .url(Const.CREATE_ROOM_URL)
-                .addParams("room_id", "room"+new Date().getTime())
+                .addParams("room_id", room.getRoom_id())
                 .addParams("user_id", LoginUtils.getLoginInfo(this).getString("userId","7"))
                 .build()
                 .execute(new StringCallback() {
