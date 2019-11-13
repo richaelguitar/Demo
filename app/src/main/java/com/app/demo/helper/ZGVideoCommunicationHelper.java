@@ -195,7 +195,7 @@ public class ZGVideoCommunicationHelper {
                 // 当 zegoStreamInfos 为 null 时说明当前房间没有人推流
 
                 if(0 == i){
-                    if(zegoStreamInfos.length <=2){
+                    if(zegoStreamInfos.length <12){
                         for(ZegoStreamInfo zegoStreamInfo : zegoStreamInfos){
                             AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "房间内收到流新增通知. streamID : %s, userName : %s, extraInfo : %s", zegoStreamInfo.streamID, zegoStreamInfo.userName, zegoStreamInfo.extraInfo);
 

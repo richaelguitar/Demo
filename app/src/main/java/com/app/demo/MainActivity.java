@@ -8,6 +8,8 @@ import android.view.View;
 import com.app.demo.basic.BaseActivity;
 import com.app.demo.helper.ZGVideoCommunicationHelper;
 
+import java.util.Date;
+
 
 /**
  * 主页面入口
@@ -43,7 +45,6 @@ public class MainActivity extends BaseActivity {
                boolean isPremission =checkOrRequestPermission(REQUEST_PERMISSION_CODE);
                if(isPremission){
                    Intent intent = new Intent(MainActivity.this, UserListActivity.class);
-                   intent.putExtra("roomId","r10086");
                    startActivity(intent);
                }
             }

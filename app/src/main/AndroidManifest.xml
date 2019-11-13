@@ -18,8 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UserListActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".UserListActivity"  android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity" android:screenOrientation="portrait">
 
         </activity>
         <activity
@@ -27,6 +27,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".CommunicationVideoUI"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
 
         <service

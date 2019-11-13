@@ -229,7 +229,7 @@ public class FloatingView implements IFloatingView, Handler.Callback {
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.BOTTOM | Gravity.END;
+        params.gravity = Gravity.TOP | Gravity.END;
         float dpDimension = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60, context.getResources().getDisplayMetrics());
         params.setMargins(13, params.topMargin, params.rightMargin, (int) dpDimension);
         return params;

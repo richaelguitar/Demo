@@ -11,11 +11,13 @@ import okhttp3.Call;
 import androidx.annotation.Nullable;
 
 import com.app.demo.App;
+import com.app.demo.BuildConfig;
 import com.app.demo.CommunicationVideoUI;
 import com.app.demo.UserListActivity;
 import com.app.demo.entity.MessageInfo;
 import com.app.demo.entity.Result;
 import com.app.demo.util.Const;
+import com.app.demo.util.DeviceInfoManager;
 import com.app.demo.util.LoginUtils;
 import com.app.demo.util.NotificationUtils;
 import com.google.gson.Gson;
@@ -41,7 +43,7 @@ public class ReflushDataService extends Service {
         String loginId = LoginUtils.getLoginInfo(this).getString("userId","666666");
                     OkHttpUtils.get()
                     .url(Const.GET_ROOM_BY_USERID_URL)
-                    .addParams("userId", loginId)
+                    .addParams("user_id", loginId)
                     .build()
                     .execute(new StringCallback() {
                         @Override
@@ -52,16 +54,25 @@ public class ReflushDataService extends Service {
                         @Override
                         public void onResponse(String response, int id) {
                             Result result = new Gson().fromJson(response,Result.class);
-                            if("200".equals(result.getCode())){
-                                if(result.getData()!=null&& !App.application.getNotificationRoomList().contains(result.getData().getRoomId())){
-                                    MessageInfo messageInfo = new MessageInfo();
-                                    messageInfo.getValues().put("title","视频请求");
-                                    messageInfo.getValues().put("content","用户："+result.getData().getUserId()+"邀请您视频通话");
-                                    messageInfo.getValues().put("roomId",result.getData().getRoomId());
-                                    messageInfo.getValues().put("userId",result.getData().getUserId());
-                                    //发出视频通知
-                                    NotificationUtils.showDefaultNotification(messageInfo,ReflushDataService.this);
-                                    App.application.getNotificationRoomList().add(result.getData().getRoomId());
+                            if(result.getCode() == 200){
+                                if(result.getData()!=null&& !App.application.getNotificationRoomList().contains(result.getData().getRoom_id())){
+                                    //判断app是否在前台
+                                    boolean isForeground = BuildConfig.APPLICATION_ID.equalsIgnoreCase(DeviceInfoManager.getTopActivityPackageName(getApplication()));
+                                    if(isForeground){
+                                        Intent intent = new Intent(getApplicationContext(), CommunicationVideoUI.class);
+                                        intent.putExtra("roomId",result.getData().getRoom_id());
+                                        intent.putExtra(Const.ACTION_TYPE,Const.ACTION_ACCEPT);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                    }else{
+                                        MessageInfo messageInfo = new MessageInfo();
+                                        messageInfo.getValues().put("title","视频请求");
+                                        messageInfo.getValues().put("content","用户："+result.getData().getProducer()+"邀请您视频通话");
+                                        messageInfo.getValues().put("roomId",result.getData().getRoom_id());
+
+                                        NotificationUtils.showDefaultNotification(messageInfo,ReflushDataService.this);
+                                    }
+                                    App.application.getNotificationRoomList().add(result.getData().getRoom_id());
                                 }
                             }
                         }

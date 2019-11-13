@@ -75,6 +75,7 @@ public class NotificationUtils {
         Intent clickIntent = new Intent(context, CommunicationVideoUI.class);
         clickIntent.putExtra("roomId",roomId);
         clickIntent.putExtra("userId",userId);
+        clickIntent.putExtra(Const.ACTION_TYPE,Const.ACTION_ACCEPT);
         return PendingIntent.getActivity(context,
                 (int) (System.currentTimeMillis()),
                 clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);

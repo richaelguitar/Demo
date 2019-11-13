@@ -3,6 +3,7 @@ package com.app.demo;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -17,7 +18,9 @@ import com.app.demo.model.VideoLayoutModel;
 
 
 import com.app.demo.basic.BaseActivity;
+import com.app.demo.util.Const;
 import com.app.demo.widgets.window.FloatingView;
+import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
 
 
@@ -44,12 +47,13 @@ public class CommunicationVideoUI extends BaseActivity {
     private CallVideoBeforeBinding   callVideoBeforeBinding;
 
     // 这里为防止多个设备测试时相同流id冲推导致的推流失败，这里使用前缀"s-streamid-"+用户id作为标识
-    private String mPublishStreamid;//+ new Date().getTime()%(new Date().getTime()/10000);
+    private String mPublishStreamid ="s-streamid-"+ new Date().getTime()%(new Date().getTime()/10000);
 
     // 推拉流布局模型
     VideoLayoutModel mVideoLayoutModel;
     // 当拉多条流时，把流id的引用放到ArrayList里
     private ArrayList<String> playStreamids = new ArrayList<>();
+    private String action;
 
 
 
@@ -61,27 +65,23 @@ public class CommunicationVideoUI extends BaseActivity {
 
         // 使用DataBinding加载布局
         callVideoBeforeBinding = DataBindingUtil.setContentView(this, R.layout.call_video_before);
-        // 在退出重进房间的时候UI上记录上一次摄像头开关和麦克风开关的状态
-        callVideoBeforeBinding.MicrophoneState.setChecked(ZGVideoCommunicationHelper.sharedInstance().getZgMicState());
-        callVideoBeforeBinding.CameraState.setChecked(ZGVideoCommunicationHelper.sharedInstance().getZgCameraState());
-
-        //挂断视频
-        callVideoBeforeBinding.ivCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(CommunicationVideoUI.this,"通话结束",Toast.LENGTH_SHORT).show();
-                CommunicationVideoUI.this.onBackPressed();
-            }
-        });
 
 
-        // 设置麦克风和摄像头的点击事件
-        setCameraAndMicrophoneStateChangedOnClickEvent();
 
         // 从VideoCommunicationMainUI的Activtity中获取传过来的RoomID，以便登录登录房间并马上推流
         Intent it = getIntent();
         String roomid = it.getStringExtra("roomId");
-        mPublishStreamid = "s-streamid-"+it.getStringExtra("userId");
+
+        action = it.getStringExtra(Const.ACTION_TYPE);
+        if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求
+            callVideoBeforeBinding.llAcceptVideo.setVisibility(View.GONE);
+            callVideoBeforeBinding.llRequestVideo.setVisibility(View.VISIBLE);
+        }else if(Const.ACTION_ACCEPT.equalsIgnoreCase(action)){//接受者接受
+            callVideoBeforeBinding.llAcceptVideo.setVisibility(View.VISIBLE);
+            callVideoBeforeBinding.llRequestVideo.setVisibility(View.GONE);
+            callVideoBeforeBinding.llVideoing.setVisibility(View.GONE);
+        }
+        ZGVideoCommunicationHelper.sharedInstance().enableMic(false);
 
         ZGVideoCommunicationHelper.sharedInstance().setZGVideoCommunicationHelperCallback( new ZGVideoCommunicationHelper.ZGVideoCommunicationHelperCallback(){
 
@@ -90,12 +90,20 @@ public class CommunicationVideoUI extends BaseActivity {
                 //有新流则添加
                 TextureView playRenderView = CommunicationVideoUI.this.mVideoLayoutModel.addStreamToViewInLayout(listStream.streamID);
 
-                if(!playStreamids.contains(listStream.streamID)){
-                    CommunicationVideoUI.this.playStreamids.add(listStream.streamID);
-                }
-                if(playStreamids.size() <= 2){
-                    callVideoBeforeBinding.tvStateDesc.setText("视频通话中");
-                }
+                CommunicationVideoUI.this.playStreamids.add(listStream.streamID);
+
+               if(!mPublishStreamid.equalsIgnoreCase(listStream.streamID)){
+                   if(Const.ACTION_ACCEPT.equalsIgnoreCase(action)){
+                       callVideoBeforeBinding.llAcceptVideo.setVisibility(View.GONE);
+                       callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
+                   }
+
+                   if(Const.ACTION_CALL.equalsIgnoreCase(action)){
+                       callVideoBeforeBinding.llRequestVideo.setVisibility(View.GONE);
+                       callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
+                   }
+               }
+
                 return playRenderView;
             }
 
@@ -135,8 +143,48 @@ public class CommunicationVideoUI extends BaseActivity {
         // 这里在登录房间之后马上推流并做本地推流的渲染
         TextureView localPreviewView = CommunicationVideoUI.this.mVideoLayoutModel.addStreamToViewInLayout(CommunicationVideoUI.this.mPublishStreamid);
 
-        // 这里进入当前Activty之后马上登录房间，在登录房间的回调中，若房间已经有其他流在推，从登录回调中获取拉流信息并拉这些流
-        ZGVideoCommunicationHelper.sharedInstance().startVideoCommunication(roomid, localPreviewView, mPublishStreamid);
+       //视频发起者进行推流
+        if(Const.ACTION_CALL.equalsIgnoreCase(action)){
+            // 这里进入当前Activty之后马上登录房间，在登录房间的回调中，若房间已经有其他流在推，从登录回调中获取拉流信息并拉这些流
+            ZGVideoCommunicationHelper.sharedInstance().startVideoCommunication(roomid,localPreviewView, mPublishStreamid);
+        }
+        //视频发起者取消
+        callVideoBeforeBinding.ivSelfCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CommunicationVideoUI.this.onBackPressed();
+                Toast.makeText(CommunicationVideoUI.this,"通话结束",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //挂断
+        callVideoBeforeBinding.ivVideoCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(CommunicationVideoUI.this,"通话结束",Toast.LENGTH_SHORT).show();
+                CommunicationVideoUI.this.onBackPressed();
+            }
+        });
+
+        //视频接受者接受视频按钮
+        callVideoBeforeBinding.ivCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("aaaa","======点击了=========");
+                // 这里进入当前Activty之后马上登录房间，在登录房间的回调中，若房间已经有其他流在推，从登录回调中获取拉流信息并拉这些流
+                ZGVideoCommunicationHelper.sharedInstance().startVideoCommunication(roomid,localPreviewView, mPublishStreamid);
+            }
+        });
+
+        //视频接受者拒绝视频按钮
+        callVideoBeforeBinding.ivReject.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CommunicationVideoUI.this.onBackPressed();
+            }
+        });
+
+
     }
 
     @Override
@@ -154,41 +202,6 @@ public class CommunicationVideoUI extends BaseActivity {
         FloatingView.get().detach(this);
     }
 
-    /**
-     * 定义设置麦克风和摄像头开关状态的点击事件
-     *
-     */
-    private void setCameraAndMicrophoneStateChangedOnClickEvent() {
-
-        // 设置摄像头开关的点击事件
-        this.callVideoBeforeBinding.CameraState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if(isChecked){
-                    ZGVideoCommunicationHelper.sharedInstance().enableCamera(true);
-                }else {
-                    ZGVideoCommunicationHelper.sharedInstance().enableCamera(false);
-
-                }
-
-            }
-        });
-
-        // 设置麦克风开关的点击事件
-        this.callVideoBeforeBinding.MicrophoneState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if(isChecked){
-                    ZGVideoCommunicationHelper.sharedInstance().enableMic(true);
-                }else {
-                    ZGVideoCommunicationHelper.sharedInstance().enableMic(false);
-                }
-
-            }
-        });
-    }
 
     /**
      * 当返回当前Activity的时候应该停止推拉流并退出房间，此处作为参考
@@ -205,7 +218,7 @@ public class CommunicationVideoUI extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        App.application.getNotificationRoomList().clear();//清空内存存储的所有的视频通知
+//        App.application.getNotificationRoomList().clear();//清空内存存储的所有的视频通知
     }
 
     /**
@@ -216,7 +229,7 @@ public class CommunicationVideoUI extends BaseActivity {
     public static void actionStart(Activity activity, String roomID) {
         Intent intent = new Intent(activity, CommunicationVideoUI.class);
         intent.putExtra("roomID", roomID);
-
+        intent.putExtra(Const.ACTION_TYPE,Const.ACTION_CALL);
         activity.startActivity(intent);
     }
 

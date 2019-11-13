@@ -21,6 +21,7 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.Call;
@@ -40,20 +41,26 @@ public class UserListActivity extends BaseActivity {
         recyclerView.setLayoutManager(manager);
         recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new RecycleViewDivider(this,LinearLayoutManager.VERTICAL));
-        String roomId = getIntent().getExtras().getString("roomId");
+        String roomId = "room-"+new Date().getTime();
         String userId = LoginUtils.getLoginInfo(this).getString("userId","222222");
-        if("666666".equals(userId)){
-            roomList.add(new Result.DataBean("888888",roomId));
+        if("7".equalsIgnoreCase(userId)){
+            roomList.add(new Result.DataBean(8,roomId));
         }else{
-            roomList.add(new Result.DataBean("666666",roomId));
+            roomList.add(new Result.DataBean(7,roomId));
         }
+
 
 
         if(commonRecyclerViewAdapter == null){
             commonRecyclerViewAdapter = new CommonRecyclerViewAdapter<Result.DataBean>(this,roomList,R.layout.layout_user_item) {
                 @Override
                 protected void convert(CommonViewHolder viewHolder, final Result.DataBean room) {
-                    ((TextView)viewHolder.getView(R.id.tv_user_id)).setText(room.getUserId());
+                    ((TextView)viewHolder.getView(R.id.tv_user_id)).setText(""+room.getConsumer());
+                    if("8".equalsIgnoreCase(userId)){
+                        viewHolder.getView(R.id.btn_call_video).setVisibility(View.GONE);
+                    }else{
+                        viewHolder.getView(R.id.btn_call_video).setVisibility(View.VISIBLE);
+                    }
                     viewHolder.getView(R.id.btn_call_video).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -75,8 +82,8 @@ public class UserListActivity extends BaseActivity {
         //发出请求
         OkHttpUtils.get()
                 .url(Const.CREATE_ROOM_URL)
-                .addParams("userId", ""+room.getUserId())
-                .addParams("roomId", ""+room.getRoomId())
+                .addParams("room_id", ""+room.getRoom_id())
+                .addParams("user_id", ""+room.getConsumer())
                 .build()
                 .execute(new StringCallback() {
                     @Override
@@ -87,10 +94,10 @@ public class UserListActivity extends BaseActivity {
                     @Override
                     public void onResponse(String response, int id) {
                         Result result = new Gson().fromJson(response.replaceAll("\\[\\]","{}"),Result.class);
-                        if("200".equals(result.getCode())){
+                        if(result.getCode() == 200){
                             Intent intent = new Intent(UserListActivity.this, CommunicationVideoUI.class);
-                            intent.putExtra("roomId",room.getRoomId());
-                            intent.putExtra("userId",room.getUserId());
+                            intent.putExtra("roomId",room.getRoom_id());
+                            intent.putExtra(Const.ACTION_TYPE,Const.ACTION_CALL);
                             startActivity(intent);
                         }else{
                             Toast.makeText(UserListActivity.this,"网络请求失败",Toast.LENGTH_SHORT).show();
