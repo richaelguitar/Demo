@@ -41,7 +41,7 @@ public class UserListActivity extends BaseActivity {
         recyclerView.setLayoutManager(manager);
         recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new RecycleViewDivider(this,LinearLayoutManager.VERTICAL));
-        String roomId = "room-"+new Date().getTime();
+        String roomId = "room"+new Date().getTime();
         String userId = LoginUtils.getLoginInfo(this).getString("userId","222222");
         if("7".equalsIgnoreCase(userId)){
             roomList.add(new Result.DataBean(8,roomId));
@@ -83,7 +83,7 @@ public class UserListActivity extends BaseActivity {
         OkHttpUtils.get()
                 .url(Const.CREATE_ROOM_URL)
                 .addParams("room_id", ""+room.getRoom_id())
-                .addParams("user_id", ""+room.getConsumer())
+                .addParams("user_id", ""+room.getProducer())
                 .build()
                 .execute(new StringCallback() {
                     @Override
