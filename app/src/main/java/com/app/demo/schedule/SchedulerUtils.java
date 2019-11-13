@@ -36,7 +36,7 @@ public class SchedulerUtils {
         return  schedulerUtils;
     }
 
-    private static final long EXCUTE_PERIODIC = 1*1000L;//每隔1s发送一次
+    private static final long EXCUTE_PERIODIC = 3*1000L;//每隔3s发送一次
 
 
     private  int JOB_ID = 100;//任务执行id

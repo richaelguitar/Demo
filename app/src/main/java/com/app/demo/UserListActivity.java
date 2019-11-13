@@ -15,6 +15,7 @@ import com.app.demo.adapter.RecycleViewDivider;
 import com.app.demo.basic.BaseActivity;
 import com.app.demo.entity.Result;
 import com.app.demo.util.Const;
+import com.app.demo.util.LoginUtils;
 import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -40,8 +41,13 @@ public class UserListActivity extends BaseActivity {
         recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new RecycleViewDivider(this,LinearLayoutManager.VERTICAL));
         String roomId = getIntent().getExtras().getString("roomId");
-        roomList.add(new Result.DataBean("666666",roomId));
-        roomList.add(new Result.DataBean("456789",roomId));
+        String userId = LoginUtils.getLoginInfo(this).getString("userId","222222");
+        if("666666".equals(userId)){
+            roomList.add(new Result.DataBean("888888",roomId));
+        }else{
+            roomList.add(new Result.DataBean("666666",roomId));
+        }
+
 
         if(commonRecyclerViewAdapter == null){
             commonRecyclerViewAdapter = new CommonRecyclerViewAdapter<Result.DataBean>(this,roomList,R.layout.layout_user_item) {

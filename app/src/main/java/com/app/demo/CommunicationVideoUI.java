@@ -202,6 +202,12 @@ public class CommunicationVideoUI extends BaseActivity {
         super.onBackPressed();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        App.application.getNotificationRoomList().clear();//清空内存存储的所有的视频通知
+    }
+
     /**
      * 供其他Activity调用，进入当前Activity进行推拉流
      *

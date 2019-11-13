@@ -38,10 +38,10 @@ public class ReflushDataService extends Service {
 
     private void reflushData() {
         //获取userId
-        int loginId = LoginUtils.getLoginInfo(this).getInt("userId",666666);
+        String loginId = LoginUtils.getLoginInfo(this).getString("userId","666666");
                     OkHttpUtils.get()
                     .url(Const.GET_ROOM_BY_USERID_URL)
-                    .addParams("userId", ""+loginId)
+                    .addParams("userId", loginId)
                     .build()
                     .execute(new StringCallback() {
                         @Override

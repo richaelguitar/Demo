@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.app.demo.basic.BaseActivity;
+import com.app.demo.schedule.SchedulerUtils;
 import com.app.demo.util.LoginUtils;
 
 
@@ -37,6 +38,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
         mLoginFormView = findViewById(R.id.email_login_form);
         mEmailView = findViewById(R.id.email);
         mEmailView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -49,6 +51,10 @@ public class LoginActivity extends BaseActivity {
                 return false;
             }
         });
+        if(LoginUtils.isLogin(this)){
+            SchedulerUtils.with(this).scheduler();//开启刷新任务
+            goHome();
+        }
     }
 
 
@@ -85,15 +91,17 @@ public class LoginActivity extends BaseActivity {
      * 登录
      */
     public void attemptLogin(View view) {
-
-        //保存用户信息
-        SharedPreferences preferences = LoginUtils.getLoginInfo(LoginActivity.this);
-        preferences.edit()
-                .putBoolean("isLogin",true)
-                .putString("userId", email)
-                .commit();
-        //登录成功 跳转到主页面
-        goHome();
+        if(validateFrom()){
+            //保存用户信息
+            SharedPreferences preferences = LoginUtils.getLoginInfo(LoginActivity.this);
+            preferences.edit()
+                    .putBoolean("isLogin",true)
+                    .putString("userId", email)
+                    .commit();
+            SchedulerUtils.with(this).scheduler();//开启刷新任务
+            //登录成功 跳转到主页面
+            goHome();
+        }
     }
 
     private void goHome() {

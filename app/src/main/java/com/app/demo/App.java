@@ -59,8 +59,8 @@ public class App extends MultiDexApplication {
 
         OkHttpUtils.initClient(okHttpClient);
         //启动任务
-        boolean isOnControl = LoginUtils.getLoginInfo(this).getBoolean("isOnControl",true);
-        if(isOnControl){
+        boolean isLogin = LoginUtils.getLoginInfo(this).getBoolean("isLogin",false);
+        if(isLogin){
             SchedulerUtils.with(this).scheduler();//开启刷新任务
         }else{
             SchedulerUtils.with(this).stopAll();//取消所有任务

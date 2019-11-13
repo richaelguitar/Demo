@@ -27,7 +27,6 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".CommunicationVideoUI"
-            android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
 
         <service

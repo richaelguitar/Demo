@@ -43,7 +43,7 @@ public class MainActivity extends BaseActivity {
                boolean isPremission =checkOrRequestPermission(REQUEST_PERMISSION_CODE);
                if(isPremission){
                    Intent intent = new Intent(MainActivity.this, UserListActivity.class);
-                   intent.putExtra("roomId","r1234567891");
+                   intent.putExtra("roomId","r10086");
                    startActivity(intent);
                }
             }

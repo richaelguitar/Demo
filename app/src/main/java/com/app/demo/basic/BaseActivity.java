@@ -48,6 +48,5 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        App.application.getNotificationRoomList().clear();//清空内存存储的所有的视频通知
     }
 }
