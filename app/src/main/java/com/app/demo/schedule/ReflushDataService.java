@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import com.app.demo.App;
 import com.app.demo.BuildConfig;
 import com.app.demo.CommunicationVideoUI;
-import com.app.demo.UserListActivity;
 import com.app.demo.entity.MessageInfo;
 import com.app.demo.entity.Result;
 import com.app.demo.util.Const;

@@ -163,7 +163,7 @@ public class ZGVideoCommunicationHelper {
     }
 
     private void setVideoQuality(int width, int height){
-        ZegoAvConfig mZegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.VeryLow);
+        ZegoAvConfig mZegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.SuperHigh);
         mZegoAvConfig.setVideoEncodeResolution(width, height);
         mZegoAvConfig.setVideoCaptureResolution(width, height);
         mZegoAvConfig.setVideoFPS(60);

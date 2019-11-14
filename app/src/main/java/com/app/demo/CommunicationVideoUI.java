@@ -3,9 +3,11 @@ package com.app.demo;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 
@@ -96,6 +98,9 @@ public class CommunicationVideoUI extends BaseActivity {
                    if(Const.ACTION_ACCEPT.equalsIgnoreCase(action)){
                        callVideoBeforeBinding.llAcceptVideo.setVisibility(View.GONE);
                        callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
+                       //开启计时器
+                       callVideoBeforeBinding.tvTime.setBase(SystemClock.elapsedRealtime());
+                       callVideoBeforeBinding.tvTime.start();
                    }
 
                    if(Const.ACTION_CALL.equalsIgnoreCase(action)){
@@ -132,6 +137,8 @@ public class CommunicationVideoUI extends BaseActivity {
 
             @Override
             public void removeRenderViewByStreamDelete(ZegoStreamInfo streamInfo) {
+                //停止计时器
+                callVideoBeforeBinding.tvTime.stop();
                 CommunicationVideoUI.this.mVideoLayoutModel.removeStreamToViewInLayout(streamInfo.streamID);
                 CommunicationVideoUI.this.playStreamids.remove(streamInfo.streamID);
                 Toast.makeText(CommunicationVideoUI.this,"对方已挂断",Toast.LENGTH_SHORT).show();
