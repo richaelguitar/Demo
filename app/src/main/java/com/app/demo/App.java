@@ -48,6 +48,18 @@ public class App extends MultiDexApplication {
         return notificationRoomList;
     }
 
+    private String userId,userName;
+
+    public String getUserId() {
+        return userId;
+    }
+
+
+    public String getUserName() {
+        return userName;
+    }
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -73,8 +85,8 @@ public class App extends MultiDexApplication {
         }
         String randomSuffix = "-" + new Date().getTime()%(new Date().getTime()/1000);
 
-        String userId = DeviceInfoManager.generateDeviceId(this) + randomSuffix;
-        String userName = DeviceInfoManager.getProductName() + randomSuffix;
+         userId = DeviceInfoManager.generateDeviceId(this) + randomSuffix;
+         userName = DeviceInfoManager.getProductName() + randomSuffix;
 
         // 使用Zego sdk前必须先设置SDKContext。
         ZGBaseHelper.sharedInstance().setSDKContextEx(userId, userName, null, null, 10 * 1024 * 1024, this);

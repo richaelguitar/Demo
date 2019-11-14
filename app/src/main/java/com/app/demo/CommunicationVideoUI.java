@@ -98,15 +98,15 @@ public class CommunicationVideoUI extends BaseActivity {
                    if(Const.ACTION_ACCEPT.equalsIgnoreCase(action)){
                        callVideoBeforeBinding.llAcceptVideo.setVisibility(View.GONE);
                        callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
-                       //开启计时器
-                       callVideoBeforeBinding.tvTime.setBase(SystemClock.elapsedRealtime());
-                       callVideoBeforeBinding.tvTime.start();
                    }
 
                    if(Const.ACTION_CALL.equalsIgnoreCase(action)){
                        callVideoBeforeBinding.llRequestVideo.setVisibility(View.GONE);
                        callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
                    }
+                   //开启计时器
+                   callVideoBeforeBinding.tvTime.setBase(SystemClock.elapsedRealtime());
+                   callVideoBeforeBinding.tvTime.start();
                }
 
                 return playRenderView;
@@ -136,12 +136,21 @@ public class CommunicationVideoUI extends BaseActivity {
             }
 
             @Override
+            public void onMessage(String content,String fromUserId) {
+
+                if("reject".equalsIgnoreCase(content)){
+                    Toast.makeText(CommunicationVideoUI.this,App.application.getUserId().equalsIgnoreCase(fromUserId)?"已拒绝对方来电":"对方已经拒绝",Toast.LENGTH_SHORT).show();
+                    onBackPressed();
+                }else if("pull".equalsIgnoreCase(content)){
+                    ZGVideoCommunicationHelper.sharedInstance().pullRoomAllStream();
+                }
+            }
+
+            @Override
             public void removeRenderViewByStreamDelete(ZegoStreamInfo streamInfo) {
-                //停止计时器
-                callVideoBeforeBinding.tvTime.stop();
                 CommunicationVideoUI.this.mVideoLayoutModel.removeStreamToViewInLayout(streamInfo.streamID);
                 CommunicationVideoUI.this.playStreamids.remove(streamInfo.streamID);
-                Toast.makeText(CommunicationVideoUI.this,"对方已挂断",Toast.LENGTH_SHORT).show();
+                Toast.makeText(CommunicationVideoUI.this,"已挂断",Toast.LENGTH_SHORT).show();
                 finish();
             }
 
@@ -149,15 +158,16 @@ public class CommunicationVideoUI extends BaseActivity {
 
         // 这里创建多人连麦的Model的实例
         this.mVideoLayoutModel = new VideoLayoutModel(this);
+        // 直接登录房间
+        ZGVideoCommunicationHelper.sharedInstance().startLoginRoom(roomid);
 
-        // 这里在登录房间之后马上推流并做本地推流的渲染
+        //并上传自己的流
         TextureView localPreviewView = CommunicationVideoUI.this.mVideoLayoutModel.addStreamToViewInLayout(CommunicationVideoUI.this.mPublishStreamid);
-
-       //视频发起者进行推流
-        if(Const.ACTION_CALL.equalsIgnoreCase(action)){
-            // 这里进入当前Activty之后马上登录房间，在登录房间的回调中，若房间已经有其他流在推，从登录回调中获取拉流信息并拉这些流
-            ZGVideoCommunicationHelper.sharedInstance().startVideoCommunication(roomid,localPreviewView, mPublishStreamid);
+        if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求
+            ZGVideoCommunicationHelper.sharedInstance().pushMySelfStream(localPreviewView,mPublishStreamid);
         }
+
+
         //视频发起者取消
         callVideoBeforeBinding.ivSelfCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,8 +190,12 @@ public class CommunicationVideoUI extends BaseActivity {
         callVideoBeforeBinding.ivCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 这里进入当前Activty之后马上登录房间，在登录房间的回调中，若房间已经有其他流在推，从登录回调中获取拉流信息并拉这些流
-                ZGVideoCommunicationHelper.sharedInstance().startVideoCommunication(roomid,localPreviewView, mPublishStreamid);
+                //接受者上传自己的流
+                ZGVideoCommunicationHelper.sharedInstance().pushMySelfStream(localPreviewView,mPublishStreamid);
+                //通知视频发起方拉流
+                ZGVideoCommunicationHelper.sharedInstance().sendCustomMessage("pull",roomid);
+                // 用户直接接受后进行拉流操作
+                ZGVideoCommunicationHelper.sharedInstance().pullRoomAllStream();
             }
         });
 
@@ -189,7 +203,8 @@ public class CommunicationVideoUI extends BaseActivity {
         callVideoBeforeBinding.ivReject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommunicationVideoUI.this.onBackPressed();
+                //发送消息通知对方拒绝
+                ZGVideoCommunicationHelper.sharedInstance().sendCustomMessage("reject",roomid);
             }
         });
 
@@ -218,7 +233,8 @@ public class CommunicationVideoUI extends BaseActivity {
      */
     @Override
     public void onBackPressed() {
-
+        //停止计时器
+        callVideoBeforeBinding.tvTime.stop();
         this.mVideoLayoutModel.removeAllStreamToViewInLayout();
         ZGVideoCommunicationHelper.sharedInstance().quitVideoCommunication(this.playStreamids);
         super.onBackPressed();
