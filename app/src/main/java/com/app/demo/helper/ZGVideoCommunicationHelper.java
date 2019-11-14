@@ -238,23 +238,9 @@ public class ZGVideoCommunicationHelper {
     /**
      * 发送自定义的消息
      * @param message
-     * @param roomId
      */
-    public void  sendCustomMessage(String message,String roomId){
-        ZegoUser[] zegoUsers = new ZegoUser[1];
-        ZegoUser zegoUser = new ZegoUser();
-        zegoUser.userID =mRoomZegoStreamInfos[0].userID;
-        zegoUser.userName = mRoomZegoStreamInfos[0].userName;
-        zegoUsers[0] = zegoUser;
+    public void  sendCustomMessage(String message){
 
-//        zegoLiveRoom.onRecvCustomCommand(mRoomZegoStreamInfos[0].userID,mRoomZegoStreamInfos[0].userName,message,roomId);
-//        zegoLiveRoom.sendCustomCommand(zegoUsers, message, new IZegoCustomCommandCallback() {
-//            @Override
-//            public void onSendCustomCommand(int i, String s) {
-//                AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "通知发送成功回调："+i+s);
-//                mCallback.onMessage(s);
-//            }
-//        });
         zegoLiveRoom.sendRoomMessage(ZegoIM.MessageType.Text,ZegoIM.MessageCategory.Chat,message,new IZegoRoomMessageCallback(){
             @Override
             public void onSendRoomMessage(int i, String s, long l) {

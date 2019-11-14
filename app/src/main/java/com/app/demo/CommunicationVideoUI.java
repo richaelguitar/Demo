@@ -58,8 +58,8 @@ public class CommunicationVideoUI extends BaseActivity {
     private ArrayList<String> playStreamids = new ArrayList<>();
     private String action;
 
-
-
+    TextureView localPreviewView;
+    String roomid;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +73,7 @@ public class CommunicationVideoUI extends BaseActivity {
 
         // 从VideoCommunicationMainUI的Activtity中获取传过来的RoomID，以便登录登录房间并马上推流
         Intent it = getIntent();
-        String roomid = it.getStringExtra("roomId");
+        roomid = it.getStringExtra("roomId");
         String userId = LoginUtils.getLoginInfo(this).getString("userId","7");
         action = it.getStringExtra(Const.ACTION_TYPE);
         if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求
@@ -156,16 +156,6 @@ public class CommunicationVideoUI extends BaseActivity {
 
         });
 
-        // 这里创建多人连麦的Model的实例
-        this.mVideoLayoutModel = new VideoLayoutModel(this);
-        // 直接登录房间
-        ZGVideoCommunicationHelper.sharedInstance().startLoginRoom(roomid);
-
-        //并上传自己的流
-        TextureView localPreviewView = CommunicationVideoUI.this.mVideoLayoutModel.addStreamToViewInLayout(CommunicationVideoUI.this.mPublishStreamid);
-        if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求
-            ZGVideoCommunicationHelper.sharedInstance().pushMySelfStream(localPreviewView,mPublishStreamid);
-        }
 
 
         //视频发起者取消
@@ -193,7 +183,7 @@ public class CommunicationVideoUI extends BaseActivity {
                 //接受者上传自己的流
                 ZGVideoCommunicationHelper.sharedInstance().pushMySelfStream(localPreviewView,mPublishStreamid);
                 //通知视频发起方拉流
-                ZGVideoCommunicationHelper.sharedInstance().sendCustomMessage("pull",roomid);
+                ZGVideoCommunicationHelper.sharedInstance().sendCustomMessage("pull");
                 // 用户直接接受后进行拉流操作
                 ZGVideoCommunicationHelper.sharedInstance().pullRoomAllStream();
             }
@@ -204,7 +194,7 @@ public class CommunicationVideoUI extends BaseActivity {
             @Override
             public void onClick(View v) {
                 //发送消息通知对方拒绝
-                ZGVideoCommunicationHelper.sharedInstance().sendCustomMessage("reject",roomid);
+                ZGVideoCommunicationHelper.sharedInstance().sendCustomMessage("reject");
             }
         });
 
@@ -217,6 +207,17 @@ public class CommunicationVideoUI extends BaseActivity {
 
         // 在应用内实现悬浮窗，需要依附Activity生命周期
         FloatingView.get().attach(this);
+        // 这里创建多人连麦的Model的实例
+        this.mVideoLayoutModel = new VideoLayoutModel(this);
+        // 直接登录房间
+        ZGVideoCommunicationHelper.sharedInstance().startLoginRoom(roomid);
+
+        //并上传自己的流
+        localPreviewView = CommunicationVideoUI.this.mVideoLayoutModel.addStreamToViewInLayout(CommunicationVideoUI.this.mPublishStreamid);
+        if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求
+            ZGVideoCommunicationHelper.sharedInstance().pushMySelfStream(localPreviewView,mPublishStreamid);
+        }
+
     }
 
     @Override
