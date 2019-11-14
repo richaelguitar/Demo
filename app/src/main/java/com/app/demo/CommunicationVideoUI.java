@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.Chronometer;
-import android.widget.CompoundButton;
+
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -31,7 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * 视频页面
+ * 视频通话主要页面
+ * 该类包含了发起者跟接受者的逻辑，由于时间关系没有拆分，拆分后逻辑会清晰很多
  */
 public class CommunicationVideoUI extends BaseActivity {
 
@@ -56,6 +55,8 @@ public class CommunicationVideoUI extends BaseActivity {
     VideoLayoutModel mVideoLayoutModel;
     // 当拉多条流时，把流id的引用放到ArrayList里
     private ArrayList<String> playStreamids = new ArrayList<>();
+
+    //用来标识是视频发起者发起视频还是接受者接受视频的动作，拆分逻辑后这里可以不要
     private String action;
 
     TextureView localPreviewView;
@@ -214,7 +215,7 @@ public class CommunicationVideoUI extends BaseActivity {
 
         //并上传自己的流
         localPreviewView = CommunicationVideoUI.this.mVideoLayoutModel.addStreamToViewInLayout(CommunicationVideoUI.this.mPublishStreamid);
-        if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求
+        if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求后上传自己的流
             ZGVideoCommunicationHelper.sharedInstance().pushMySelfStream(localPreviewView,mPublishStreamid);
         }
 

@@ -1,5 +1,8 @@
 package com.app.demo.entity;
 
+/**
+ * 接口返回实体类
+ */
 public class Result {
 
 
