@@ -5,11 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.app.demo.basic.BaseActivity;
+import com.app.demo.helper.ZGVideoCommunicationHelper;
 
-import com.app.demo.ui.BaseActivity;
-import com.app.demo.ui.WebActivity;
-import com.zego.zegoliveroom.constants.ZegoConstants;
+import java.util.Date;
 
 
 /**
@@ -23,6 +22,13 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_main);
+        //检查权限
+
+        checkOrRequestPermission(REQUEST_PERMISSION_CODE);
+        // 初始化 ZGVideoCommunicationHelper 实例
+        ZGVideoCommunicationHelper.sharedInstance().initZGVideoCommunicationHelper();
+
+
         //进入h5
         findViewById(R.id.btn_start_webview).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,29 +37,16 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        //主播开播
-        findViewById(R.id.btn_anchor_video).setOnClickListener(new View.OnClickListener() {
+        //用户列表
+        findViewById(R.id.btn_user_page).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               boolean isPremission = checkOrRequestPermission(REQUEST_PERMISSION_CODE);
+
+               boolean isPremission =checkOrRequestPermission(REQUEST_PERMISSION_CODE);
                if(isPremission){
-                   Intent intent = new Intent(MainActivity.this, AnchorVideoUI.class);
-                   intent.putExtra("roomID","10000086");
+                   Intent intent = new Intent(MainActivity.this, UserListActivity.class);
                    startActivity(intent);
                }
-            }
-        });
-
-        //观众进入
-        findViewById(R.id.btn_audience_video).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean isPremission = checkOrRequestPermission(REQUEST_PERMISSION_CODE);
-                if(isPremission){
-                    Intent intent = new Intent(MainActivity.this, AudienceVideoUI.class);
-                    intent.putExtra("roomID","10000086");
-                    startActivity(intent);
-                }
             }
         });
 

@@ -1,4 +1,4 @@
-package com.app.demo.ui;
+package com.app.demo.basic;
 
 import android.app.ProgressDialog;
 import android.content.res.Resources;

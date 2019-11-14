@@ -7,13 +7,23 @@ import androidx.multidex.MultiDex;
 import androidx.multidex.MultiDexApplication;
 
 import com.app.demo.helper.ZGBaseHelper;
+import com.app.demo.schedule.SchedulerUtils;
 import com.app.demo.util.AppLogger;
 import com.app.demo.util.DeviceInfoManager;
-import com.app.demo.widgets.window.FloatingView;
+import com.app.demo.util.LoginUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.zego.zegoliveroom.ZegoLiveRoom;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.log.LoggerInterceptor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.ConnectionSpec;
+import okhttp3.OkHttpClient;
 
 /**
  * 程序入口
@@ -22,26 +32,61 @@ import java.util.Date;
  */
 public class App extends MultiDexApplication {
 
+    private static final String TAG = App.class.getSimpleName();
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
     }
 
-    public static Application App;
+    public static App application;
+
+    private List<String>  notificationRoomList = new ArrayList<>();
+
+    public List<String> getNotificationRoomList() {
+        return notificationRoomList;
+    }
+
+    private String userId,userName;
+
+    public String getUserId() {
+        return userId;
+    }
+
+
+    public String getUserName() {
+        return userName;
+    }
+
 
     @Override
     public void onCreate() {
         super.onCreate();
-        App = this;
+        application = this;
+        //初始化网络请求框架参数配置
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectionSpecs(Arrays.asList(
+                        ConnectionSpec.MODERN_TLS,
+                        ConnectionSpec.COMPATIBLE_TLS,
+                        ConnectionSpec.CLEARTEXT) )
+                .addInterceptor(new LoggerInterceptor(TAG))//设置日志拦截器
+                .connectTimeout(10000L, TimeUnit.MILLISECONDS)
+                .readTimeout(10000L, TimeUnit.MILLISECONDS)
+                .build();
 
+        OkHttpUtils.initClient(okHttpClient);
+        //启动任务
+        boolean isLogin = LoginUtils.getLoginInfo(this).getBoolean("isLogin",false);
+        if(isLogin){
+            SchedulerUtils.with(this).scheduler();//开启刷新任务
+        }else{
+            SchedulerUtils.with(this).stopAll();//取消所有任务
+        }
         String randomSuffix = "-" + new Date().getTime()%(new Date().getTime()/1000);
 
-        String userId = DeviceInfoManager.generateDeviceId(this) + randomSuffix;
-        String userName = DeviceInfoManager.getProductName() + randomSuffix;
-
-        // 添加悬浮日志视图
-        FloatingView.get().add();
+         userId = DeviceInfoManager.generateDeviceId(this) + randomSuffix;
+         userName = DeviceInfoManager.getProductName() + randomSuffix;
 
         // 使用Zego sdk前必须先设置SDKContext。
         ZGBaseHelper.sharedInstance().setSDKContextEx(userId, userName, null, null, 10 * 1024 * 1024, this);

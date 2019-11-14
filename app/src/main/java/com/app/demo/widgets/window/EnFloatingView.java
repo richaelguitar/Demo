@@ -1,7 +1,11 @@
 package com.app.demo.widgets.window;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,12 +17,11 @@ public class EnFloatingView extends FloatingMagnetView {
 
     private long mLastTouchDownTime;
     private static final int TOUCH_TIME_THRESHOLD = 150;
-    private final TextView mIcon;
+
 
     public EnFloatingView(@NonNull Context context) {
         super(context, null);
-        inflate(context, R.layout.log_floating_view, this);
-        mIcon = findViewById(R.id.icon);
+        inflate(context, R.layout.header_floating_view, this);
     }
 
     @Override

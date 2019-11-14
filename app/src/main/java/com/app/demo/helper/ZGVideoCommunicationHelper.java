@@ -6,20 +6,30 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.app.demo.App;
 import com.app.demo.util.AppLogger;
+import com.app.demo.util.LoginUtils;
 import com.app.demo.util.ZegoUtil;
 import com.zego.zegoliveroom.ZegoLiveRoom;
+import com.zego.zegoliveroom.callback.IZegoCustomCommandCallback;
 import com.zego.zegoliveroom.callback.IZegoInitSDKCompletionCallback;
 import com.zego.zegoliveroom.callback.IZegoLivePublisherCallback;
 import com.zego.zegoliveroom.callback.IZegoLoginCompletionCallback;
 import com.zego.zegoliveroom.callback.IZegoResponseCallback;
 import com.zego.zegoliveroom.callback.IZegoRoomCallback;
+import com.zego.zegoliveroom.callback.im.IZegoIMCallback;
+import com.zego.zegoliveroom.callback.im.IZegoRoomMessageCallback;
 import com.zego.zegoliveroom.constants.ZegoAvConfig;
 import com.zego.zegoliveroom.constants.ZegoConstants;
+import com.zego.zegoliveroom.constants.ZegoIM;
 import com.zego.zegoliveroom.constants.ZegoVideoViewMode;
 import com.zego.zegoliveroom.entity.AuxData;
+import com.zego.zegoliveroom.entity.ZegoBigRoomMessage;
 import com.zego.zegoliveroom.entity.ZegoPublishStreamQuality;
+import com.zego.zegoliveroom.entity.ZegoRoomMessage;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
+import com.zego.zegoliveroom.entity.ZegoUser;
+import com.zego.zegoliveroom.entity.ZegoUserState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,9 +64,10 @@ public class ZGVideoCommunicationHelper {
 
     private ZGVideoCommunicationHelperCallback mCallback;
 
-    private ZGVideoAnchorLiveHelperCallback mAnchorCallback;//主播回调
+    private ZegoStreamInfo[] mRoomZegoStreamInfos;//保存房间内的所有流
 
-    private ZGVideoAudienceHelperCallback mAudienceCallback;//观众回调
+    private boolean isLogin;//标记当前用户是否登录房间
+
 
     // 记录SDK的初始化状态
     private ZGSDKInitState zgsdkInitState = ZGSDKInitState.WaitInitState;
@@ -165,56 +176,16 @@ public class ZGVideoCommunicationHelper {
     }
 
     private void setVideoQuality(int width, int height){
-        ZegoAvConfig mZegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.VeryLow);
+        ZegoAvConfig mZegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.SuperHigh);
         mZegoAvConfig.setVideoEncodeResolution(width, height);
         mZegoAvConfig.setVideoCaptureResolution(width, height);
         mZegoAvConfig.setVideoFPS(60);
         zegoLiveRoom.setAVConfig(mZegoAvConfig);
     }
 
-    /**
-     * 观众发出连麦请求
-     */
-    public void requestJoinLive(String roomID){
-
-        if (getZgsdkInitState() != ZGVideoCommunicationHelper.ZGSDKInitState.InitSuccessState) {
-            AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "登陆失败: 请先InitSdk");
-            return;
-        }
-
-        zegoLiveRoom.requestJoinLive(new IZegoResponseCallback() {
-            @Override
-            public void onResponse(int seq, String toUserId, String userName) {
-                if(mAudienceCallback!=null){
-                    mAudienceCallback.onJoinLiveResponse(seq,toUserId,userName,roomID);
-                }
-            }
-        });
-    }
 
     /**
-     * 主播发出连麦请求
-     */
-    public void inviteJoinLive(String targetUserID,String roomID){
-
-        if (getZgsdkInitState() != ZGVideoCommunicationHelper.ZGSDKInitState.InitSuccessState) {
-            AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "登陆失败: 请先InitSdk");
-            return;
-        }
-
-        zegoLiveRoom.inviteJoinLive(targetUserID, new IZegoResponseCallback() {
-            @Override
-            public void onResponse(int seq, String fromUserId, String userName) {
-                if(mAnchorCallback!=null){
-                    mAnchorCallback.onInviteJoinLiveResponse(seq,fromUserId,userName,roomID);
-                }
-            }
-        });
-    }
-
-
-    /**
-     * 开始实时视频通话
+     * 开始登录房间
      * <p>
      * 注意!!! sdk的推拉流以及信令服务等常用功能都需要登录房间后才能使用,
      * 在退出房间时必须要调用{@link #logoutRoom()}退出房间。
@@ -223,14 +194,14 @@ public class ZGVideoCommunicationHelper {
      *               每个房间 ID 代表着一个房间。
      * @return true 为调用成功，false 为调用失败
      */
-    public void startVideoCommunication(String roomID, TextureView localPreviewView, String publishStreamid){
+    public void startLoginRoom(String roomID){
 
         if (getZgsdkInitState() != ZGVideoCommunicationHelper.ZGSDKInitState.InitSuccessState) {
             AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "登陆失败: 请先InitSdk");
             return;
         }
         AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "开始登陆房间!");
-        zegoLiveRoom.loginRoom(roomID, ZegoConstants.RoomRole.Anchor, new IZegoLoginCompletionCallback() {
+        zegoLiveRoom.loginRoom(roomID,ZegoConstants.RoomRole.Anchor, new IZegoLoginCompletionCallback() {
             @Override
             public void onLoginCompletion(int i, ZegoStreamInfo[] zegoStreamInfos) {
                 // zegoStreamInfos，内部封装了 userID、userName、streamID 和 extraInfo。
@@ -238,32 +209,74 @@ public class ZGVideoCommunicationHelper {
                 // 当 zegoStreamInfos 为 null 时说明当前房间没有人推流
 
                 if(0 == i){
-                    if(zegoStreamInfos.length < 12){
-                        for(ZegoStreamInfo zegoStreamInfo : zegoStreamInfos){
-                            AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "房间内收到流新增通知. streamID : %s, userName : %s, extraInfo : %s", zegoStreamInfo.streamID, zegoStreamInfo.userName, zegoStreamInfo.extraInfo);
-
-                            TextureView playRenderView =  mCallback.addRenderViewByStreamAdd(zegoStreamInfo);
-                            ZGVideoCommunicationHelper.sharedInstance().startPlaying(zegoStreamInfo.streamID, playRenderView);
-                            ZGVideoCommunicationHelper.sharedInstance().setPlayViewMode(ZegoVideoViewMode.ScaleAspectFill, zegoStreamInfo.streamID);
-                        }
-                    }else {
-                        AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "房间已满人，目前demo只展示12人通讯");
+                    isLogin = true;
+                    mRoomZegoStreamInfos = zegoStreamInfos;
+                    if(zegoStreamInfos.length > 2){
+                        AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "房间已满人，目前demo只展示2人通讯");
                         mCallback.onLoginRoomFailed(NUMBER_OF_PEOPLE_EXCEED_LIMIT);
                     }
-
                 }else {
-
+                    isLogin = false;
                     mCallback.onLoginRoomFailed(i);
 
                 }
             }
         });
+    }
 
+    /**
+     * 推自己的流到服务器
+     * @param localPreviewView
+     * @param publishStreamid
+     */
+    public void pushMySelfStream(TextureView localPreviewView, String publishStreamid) {
         ZGVideoCommunicationHelper.sharedInstance().setPreviewViewMode(ZegoVideoViewMode.ScaleAspectFill);
         ZGVideoCommunicationHelper.sharedInstance().startPreview(localPreviewView);
         ZGVideoCommunicationHelper.sharedInstance().startPublishing(publishStreamid, publishStreamid + "-title", ZegoConstants.PublishFlag.JoinPublish);
+    }
 
+    /**
+     * 发送自定义的消息
+     * @param message
+     */
+    public void  sendCustomMessage(String message){
 
+        zegoLiveRoom.sendRoomMessage(ZegoIM.MessageType.Text,ZegoIM.MessageCategory.Chat,message,new IZegoRoomMessageCallback(){
+            @Override
+            public void onSendRoomMessage(int i, String s, long l) {
+                AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "通知发送成功回调："+i+s);
+            }
+        });
+    }
+
+    /**
+     * 从服务器拉流下来
+     */
+    public void pullRoomAllStream() {
+        //校验是否成功登陆房间
+        if(!isLogin){
+            mCallback.onLoginRoomFailed(10000105);
+            return;
+        }
+        if(mRoomZegoStreamInfos != null){
+            //开始拉取流
+            for(ZegoStreamInfo zegoStreamInfo : mRoomZegoStreamInfos){
+                AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "房间内收到流新增通知. streamID : %s, userName : %s, extraInfo : %s", zegoStreamInfo.streamID, zegoStreamInfo.userName, zegoStreamInfo.extraInfo);
+                TextureView playRenderView =  mCallback.addRenderViewByStreamAdd(zegoStreamInfo);
+                ZGVideoCommunicationHelper.sharedInstance().startPlaying(zegoStreamInfo.streamID, playRenderView);
+                ZGVideoCommunicationHelper.sharedInstance().setPlayViewMode(ZegoVideoViewMode.ScaleAspectFill, zegoStreamInfo.streamID);
+            }
+        }
+
+    }
+
+    /**
+     * 清除房间内所有的流
+     */
+    public void  clearRoomZegoStreamInfos(){
+        if(mRoomZegoStreamInfos != null) {
+            mRoomZegoStreamInfos = null;
+        }
     }
 
     /**
@@ -308,48 +321,13 @@ public class ZGVideoCommunicationHelper {
      */
     public interface ZGVideoCommunicationHelperCallback {
 
-        int NUMBER_OF_PEOPLE_EXCEED_LIMIT = 12;
+        int NUMBER_OF_PEOPLE_EXCEED_LIMIT = 2;
 
         TextureView addRenderViewByStreamAdd(ZegoStreamInfo listStream);
         void removeRenderViewByStreamDelete(ZegoStreamInfo listStream);
         void onLoginRoomFailed(int errorcode);
         void onPublishStreamFailed(int errorcode);
-    }
-
-    /**
-     * 观众连麦请求回调
-     */
-    public interface ZGVideoAudienceHelperCallback extends ZGVideoCommunicationHelperCallback{
-
-        int NUMBER_OF_PEOPLE_EXCEED_LIMIT = 1;
-
-        void onJoinLiveResponse(int seq,String fromUserID, String fromUserName, String roomID);
-    }
-
-    /**
-     * 主播连麦请求回调
-     */
-    public interface ZGVideoAnchorLiveHelperCallback extends ZGVideoCommunicationHelperCallback{
-
-        int NUMBER_OF_PEOPLE_EXCEED_LIMIT = 1;
-
-        void onInviteJoinLiveResponse(int seq,String fromUserID, String fromUserName, String roomID);
-    }
-
-    /**
-     * 设置主播回调代理
-     * @param mAnchorCallback
-     */
-    public void setmAnchorCallback(ZGVideoAnchorLiveHelperCallback mAnchorCallback) {
-        this.mAnchorCallback = mAnchorCallback;
-    }
-
-    /**
-     * 设置观众回调代理
-     * @param mAudienceCallback
-     */
-    public void setmAudienceCallback(ZGVideoAudienceHelperCallback mAudienceCallback) {
-        this.mAudienceCallback = mAudienceCallback;
+        void onMessage(String content,String userId);
     }
 
     /**
@@ -470,6 +448,8 @@ public class ZGVideoCommunicationHelper {
 
             }
 
+
+
             /**
              * 接收到自定义消息的回调，本示例专题demo为演示用，并不关注，业务可以根据自己的情况关注并做处理
              *
@@ -483,6 +463,31 @@ public class ZGVideoCommunicationHelper {
                 AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "收到自定义消息. userID : %s, userID : %s, content : %s, roomID : %s", userID, userName, content, roomID);
             }
         });
+
+        //IM消息回调
+        zegoLiveRoom.setZegoIMCallback(new IZegoIMCallback() {
+            @Override
+            public void onUserUpdate(ZegoUserState[] zegoUserStates, int i) {
+
+            }
+
+            @Override
+            public void onRecvRoomMessage(String s, ZegoRoomMessage[] zegoRoomMessages) {
+                AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "收到房间的消息. fromUserID : %s, fromUserName : %s, content : %s, roomID : %s", zegoRoomMessages[0].fromUserID, zegoRoomMessages[0].fromUserName, zegoRoomMessages[0].content, zegoRoomMessages[0].messageCategory);
+                mCallback.onMessage(zegoRoomMessages[0].content,zegoRoomMessages[0].fromUserID);
+            }
+
+            @Override
+            public void onUpdateOnlineCount(String s, int i) {
+
+            }
+
+            @Override
+            public void onRecvBigRoomMessage(String s, ZegoBigRoomMessage[] zegoBigRoomMessages) {
+
+            }
+        });
+
 
         /**
          * 通过设置sdk推流代理，可以收到推流相关的一些信息回调。
@@ -735,6 +740,7 @@ public class ZGVideoCommunicationHelper {
      * @param playStreamids 退出时应传入正在拉流的流id来停止拉流
      */
     public void quitVideoCommunication(ArrayList<String> playStreamids){
+        mRoomZegoStreamInfos = null;
         ZGVideoCommunicationHelper.sharedInstance().stopPublishing();
         ZGVideoCommunicationHelper.sharedInstance().stopPreviewView();
         for(String playStreamid : playStreamids){

@@ -4,6 +4,16 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
 
+    signingConfigs {
+        app {
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyPassword')
+            storeFile file(project.property('storeFile_path'))
+            storePassword project.property('storePassword')
+            v2SigningEnabled true
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -14,27 +24,39 @@ android {
     }
 
     defaultConfig {
+
+        buildConfigField 'String', 'BASE_URL', project.property('BASE_URL')
         applicationId "com.app.demo"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-//        ndk {
-//            abiFilters "armeabi", "armeabi-v7a" , "arm64-v8a", "x86", "x86_64", "mips", "mips64"
-//        }
         multiDexEnabled true
+        ndk {
+//            设置支持的SO库架构
+//            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86','x86_64'
+        }
     }
+
     buildTypes {
-        release {
+        debug {
+            buildConfigField 'String', 'BASE_URL', project.property('BASE_URL')
             minifyEnabled false
+            signingConfig signingConfigs.app
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            buildConfigField 'String', 'BASE_URL', project.property('BASE_URL')
+            minifyEnabled false
+            signingConfig signingConfigs.app
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     sourceSets {
         main {
-            jniLibs.srcDirs = ['zego_libs']
+            jniLibs.srcDirs = ['libs']
         }
     }
 }
@@ -48,10 +70,14 @@ dependencies {
     implementation 'com.tencent.bugly:nativecrashreport:3.6.0.1'
     //引入ButterKnife
     implementation 'com.jakewharton:butterknife:10.2.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.annotation:annotation:1.0.2'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
