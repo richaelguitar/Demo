@@ -52,7 +52,8 @@ public class LoginActivity extends BaseActivity {
             }
         });
         if(LoginUtils.isLogin(this)){
-            SchedulerUtils.with(this).scheduler();//开启刷新任务
+            //开启刷新任务
+            SchedulerUtils.with(this).doPolling(true);
             goHome();
         }
     }
@@ -98,7 +99,7 @@ public class LoginActivity extends BaseActivity {
                     .putBoolean("isLogin",true)
                     .putString("userId", email)
                     .commit();
-            SchedulerUtils.with(this).scheduler();//开启刷新任务
+            SchedulerUtils.with(this).doPolling(true);//开启刷新任务
             //登录成功 跳转到主页面
             goHome();
         }

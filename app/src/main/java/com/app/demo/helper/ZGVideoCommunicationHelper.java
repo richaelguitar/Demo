@@ -176,10 +176,10 @@ public class ZGVideoCommunicationHelper {
     }
 
     private void setVideoQuality(int width, int height){
-        ZegoAvConfig mZegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.SuperHigh);
+        ZegoAvConfig mZegoAvConfig = new ZegoAvConfig(ZegoAvConfig.Level.High);
         mZegoAvConfig.setVideoEncodeResolution(width, height);
         mZegoAvConfig.setVideoCaptureResolution(width, height);
-        mZegoAvConfig.setVideoFPS(60);
+        mZegoAvConfig.setVideoFPS(15);
         zegoLiveRoom.setAVConfig(mZegoAvConfig);
     }
 
@@ -194,14 +194,14 @@ public class ZGVideoCommunicationHelper {
      *               每个房间 ID 代表着一个房间。
      * @return true 为调用成功，false 为调用失败
      */
-    public void startLoginRoom(String roomID){
+    public boolean startLoginRoom(String roomID){
 
         if (getZgsdkInitState() != ZGVideoCommunicationHelper.ZGSDKInitState.InitSuccessState) {
             AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "登陆失败: 请先InitSdk");
-            return;
+            return false;
         }
         AppLogger.getInstance().i(ZGVideoCommunicationHelper.class, "开始登陆房间!");
-        zegoLiveRoom.loginRoom(roomID,ZegoConstants.RoomRole.Anchor, new IZegoLoginCompletionCallback() {
+        return  zegoLiveRoom.loginRoom(roomID,ZegoConstants.RoomRole.Anchor, new IZegoLoginCompletionCallback() {
             @Override
             public void onLoginCompletion(int i, ZegoStreamInfo[] zegoStreamInfos) {
                 // zegoStreamInfos，内部封装了 userID、userName、streamID 和 extraInfo。

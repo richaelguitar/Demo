@@ -52,4 +52,9 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        ZGVideoCommunicationHelper.sharedInstance().releaseZGVideoCommunicationHelper();
+        super.onDestroy();
+    }
 }

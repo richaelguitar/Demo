@@ -231,7 +231,7 @@ public class FloatingView implements IFloatingView, Handler.Callback {
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.TOP | Gravity.END;
         float dpDimension = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 60, context.getResources().getDisplayMetrics());
-        params.setMargins(13, params.topMargin, params.rightMargin, (int) dpDimension);
+        params.setMargins(13, (int)dpDimension, params.rightMargin, (int) dpDimension);
         return params;
     }
 
@@ -246,5 +246,4 @@ public class FloatingView implements IFloatingView, Handler.Callback {
         }
         return null;
     }
-
 }

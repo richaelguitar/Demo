@@ -79,11 +79,11 @@ public class App extends MultiDexApplication {
         //启动任务
         boolean isLogin = LoginUtils.getLoginInfo(this).getBoolean("isLogin",false);
         if(isLogin){
-            SchedulerUtils.with(this).scheduler();//开启刷新任务
+            SchedulerUtils.with(this).doPolling(true);//开启刷新任务
         }else{
-            SchedulerUtils.with(this).stopAll();//取消所有任务
+            SchedulerUtils.with(this).removeMessageCallback();//取消所有任务
         }
-        String randomSuffix = "-" + new Date().getTime()%(new Date().getTime()/1000);
+        String randomSuffix = "-" + System.currentTimeMillis();
 
          userId = DeviceInfoManager.generateDeviceId(this) + randomSuffix;
          userName = DeviceInfoManager.getProductName() + randomSuffix;

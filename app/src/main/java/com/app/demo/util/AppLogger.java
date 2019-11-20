@@ -85,39 +85,39 @@ public class AppLogger {
         }
 
         // 之所以通过反射来调用，是为了避免客户在copy代码的时候还需要依赖一堆悬浮日志视图的代码。
-        try {
-            Class<?> floatingView = Class.forName("com.app.demo.widgets.window.FloatingView");
-            Method method = floatingView.getMethod("get");
-            Object object = method.invoke(null);
-            Method addLogMethod = object.getClass().getMethod("addLog", String.class);
-            addLogMethod.invoke(object, message_with_time);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Class<?> floatingView = Class.forName("com.app.demo.widgets.window.FloatingView");
+//            Method method = floatingView.getMethod("get");
+//            Object object = method.invoke(null);
+//            Method addLogMethod = object.getClass().getMethod("addLog", String.class);
+//            addLogMethod.invoke(object, message_with_time);
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (InvocationTargetException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void clearLog() {
-        try {
-            Class<?> floatingView = Class.forName("com.app.demo.widgets.window.FloatingView");
-            Method method = floatingView.getMethod("get");
-            Object object = method.invoke(null);
-            Method addLogMethod = object.getClass().getMethod("clearLog");
-            addLogMethod.invoke(object);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Class<?> floatingView = Class.forName("com.app.demo.widgets.window.FloatingView");
+//            Method method = floatingView.getMethod("get");
+//            Object object = method.invoke(null);
+//            Method addLogMethod = object.getClass().getMethod("clearLog");
+//            addLogMethod.invoke(object);
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (InvocationTargetException e) {
+//            e.printStackTrace();
+//        }
     }
 
 }

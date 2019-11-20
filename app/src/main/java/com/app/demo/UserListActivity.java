@@ -14,6 +14,7 @@ import com.app.demo.adapter.CommonViewHolder;
 import com.app.demo.adapter.RecycleViewDivider;
 import com.app.demo.basic.BaseActivity;
 import com.app.demo.entity.Result;
+import com.app.demo.util.ActivityUtils;
 import com.app.demo.util.Const;
 import com.app.demo.util.LoginUtils;
 import com.google.gson.Gson;
@@ -42,10 +43,10 @@ public class UserListActivity extends BaseActivity {
         recyclerView.setHasFixedSize(false);
         recyclerView.addItemDecoration(new RecycleViewDivider(this,LinearLayoutManager.VERTICAL));
         String userId = LoginUtils.getLoginInfo(this).getString("userId","222222");
-        if("7".equalsIgnoreCase(userId)){
-            roomList.add(new Result.DataBean(8));
+        if("3".equalsIgnoreCase(userId)){
+            roomList.add(new Result.DataBean(4));
         }else{
-            roomList.add(new Result.DataBean(7));
+            roomList.add(new Result.DataBean(3));
         }
 
 
@@ -55,7 +56,7 @@ public class UserListActivity extends BaseActivity {
                 @Override
                 protected void convert(CommonViewHolder viewHolder, final Result.DataBean room) {
                     ((TextView)viewHolder.getView(R.id.tv_user_id)).setText(""+room.getConsumer());
-                    if("8".equalsIgnoreCase(userId)){
+                    if("4".equalsIgnoreCase(userId)){
                         viewHolder.getView(R.id.btn_call_video).setVisibility(View.GONE);
                     }else{
                         viewHolder.getView(R.id.btn_call_video).setVisibility(View.VISIBLE);
@@ -63,8 +64,8 @@ public class UserListActivity extends BaseActivity {
                     viewHolder.getView(R.id.btn_call_video).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            room.setRoom_id("room"+new Date().getTime());
-                            sendCallNotification(room);
+                            //发起视频
+                            ActivityUtils.with(UserListActivity.this).startVideo(userId,"room"+System.currentTimeMillis());
                         }
                     });
                 }
@@ -76,34 +77,5 @@ public class UserListActivity extends BaseActivity {
 
 
 
-    }
-
-    private void sendCallNotification(Result.DataBean room) {
-        //发出请求
-        OkHttpUtils.get()
-                .url(Const.CREATE_ROOM_URL)
-                .addParams("room_id", room.getRoom_id())
-                .addParams("user_id", LoginUtils.getLoginInfo(this).getString("userId","7"))
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Toast.makeText(UserListActivity.this,"网络请求失败",Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onResponse(String response, int id) {
-                        Result result = new Gson().fromJson(response.replaceAll("\\[\\]","{}"),Result.class);
-                        if(result.getCode() == 200){
-                            Intent intent = new Intent(UserListActivity.this, CommunicationVideoUI.class);
-                            intent.putExtra("roomId",room.getRoom_id());
-                            intent.putExtra(Const.ACTION_TYPE,Const.ACTION_CALL);
-                            startActivity(intent);
-                        }else{
-                            Toast.makeText(UserListActivity.this,"网络请求失败",Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                });
     }
 }

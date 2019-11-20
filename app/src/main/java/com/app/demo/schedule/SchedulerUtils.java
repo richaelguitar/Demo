@@ -1,23 +1,47 @@
 package com.app.demo.schedule;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
-import android.os.Build;
+import android.content.Intent;
 
-import static android.content.Context.JOB_SCHEDULER_SERVICE;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.app.demo.App;
+import com.app.demo.BuildConfig;
+import com.app.demo.CommunicationVideoUI;
+import com.app.demo.entity.MessageInfo;
+import com.app.demo.entity.Result;
+import com.app.demo.util.Const;
+import com.app.demo.util.DeviceInfoManager;
+import com.app.demo.util.LoginUtils;
+import com.app.demo.util.NotificationUtils;
+import com.google.gson.Gson;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
+
+import okhttp3.Call;
+
 
 /**
  * 定时执行调度工具
  */
 public class SchedulerUtils {
 
+    private static final int MSG_POLLING = 100;
     private static SchedulerUtils schedulerUtils;
+
+    public static final  int SUCCESS_CODE = 200;
 
     private Context mContext;
 
-    private JobScheduler jobScheduler;
+    //时间间隔
+    private  static final long POLLING_INTERVAL=3*1000L;
+
+    public static MessageHandler mHandler = new MessageHandler();
 
 
     private SchedulerUtils(Context context){
@@ -36,51 +60,84 @@ public class SchedulerUtils {
         return  schedulerUtils;
     }
 
-    private static final long EXCUTE_PERIODIC = 3*1000L;//每隔3s发送一次
-
-
-    private  int JOB_ID = 100;//任务执行id
-
-
+    public static class MessageHandler extends Handler{
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_POLLING:
+                    schedulerUtils.doPolling(false);
+                    break;
+                    default:
+                        break;
+            }
+        }
+    }
 
     /**
-     * 开始调度
+     * 移除消息
      */
-    public void scheduler() {
-
-        try {
-
-            //创建执行调度器
-            jobScheduler = (JobScheduler) mContext.getSystemService(JOB_SCHEDULER_SERVICE);
-            JobInfo.Builder builder = new JobInfo.Builder(JOB_ID, new ComponentName(mContext, ScheduleExecuteService.class));//指定哪个JobService执行操作
-            //兼容android7.0以后的官方对执行时间间隔小于15分钟的限制
-            if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.N){
-                builder.setMinimumLatency(EXCUTE_PERIODIC);//设置最小延迟时间
-            }else{
-                builder.setPeriodic(EXCUTE_PERIODIC);//设置执行周期
-            }
-            builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY); // 有网络的情况下执行
-            builder.setPersisted(false);//设备重启后执行
-            //创建调度任务，等待系统执行
-            jobScheduler.schedule(builder.build());
-
-        }catch (Exception e){
-            e.printStackTrace();
+    public void  removeMessageCallback(){
+        if(mHandler!=null){
+            mHandler.removeMessages(MSG_POLLING);
         }
     }
 
-    //停止定时调度执行
-    public void stop(){
-        if(jobScheduler!=null){
-            jobScheduler.cancel(JOB_ID);
-            jobScheduler = null;
+
+
+
+    public void doPolling(Boolean isFirst) {
+        if(isFirst) {
+            mHandler.removeMessages(MSG_POLLING);
+            mHandler.sendEmptyMessageDelayed(MSG_POLLING, POLLING_INTERVAL);
+            return;
         }
+        reflushData(); //执行异步轮询任务
+        mHandler.sendEmptyMessageDelayed(MSG_POLLING, POLLING_INTERVAL);
     }
-    //取消所有任务
-    public void stopAll(){
-        if(jobScheduler!=null){
-            jobScheduler.cancelAll();
-            jobScheduler = null;
-        }
+
+    /**
+     * 刷新消息
+     */
+    private  void reflushData() {
+        Log.d(SchedulerUtils.class.getSimpleName(),"执行了====");
+        //获取userId
+        String loginId = LoginUtils.getLoginInfo(mContext).getString("userId","4");
+        OkHttpUtils.get()
+                .url(Const.GET_ROOM_BY_USERID_URL)
+                .addParams("user_id", loginId)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        Result result = new Gson().fromJson(response,Result.class);
+                        if(result.getCode() == SUCCESS_CODE){
+                            if(result.getData()!=null&& !TextUtils.isEmpty(result.getData().getRoom_id())){
+                                //判断app是否在前台
+                                boolean isForeground = BuildConfig.APPLICATION_ID.equalsIgnoreCase(DeviceInfoManager.getTopActivityPackageName(mContext));
+                                if(isForeground){
+                                    Intent intent = new Intent(mContext, CommunicationVideoUI.class);
+                                    intent.putExtra("roomId",result.getData().getRoom_id());
+                                    intent.putExtra(Const.ACTION_TYPE,Const.ACTION_ACCEPT);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    mContext.startActivity(intent);
+                                }else{
+                                    MessageInfo messageInfo = new MessageInfo();
+                                    messageInfo.getValues().put("title","视频请求");
+                                    messageInfo.getValues().put("content","事件id："+result.getData().getEvent_id()+"邀请您视频通话");
+                                    messageInfo.getValues().put("roomId",result.getData().getRoom_id());
+
+                                    NotificationUtils.showDefaultNotification(messageInfo,mContext);
+                                }
+                                App.application.getNotificationRoomList().add(result.getData().getRoom_id());
+                            }
+                        }
+                    }
+                });
     }
 }

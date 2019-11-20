@@ -21,12 +21,12 @@ import com.app.demo.basic.BaseActivity;
 import com.app.demo.util.Const;
 import com.app.demo.util.LoginUtils;
 import com.app.demo.widgets.window.FloatingView;
-import com.zego.zegoliveroom.constants.ZegoConstants;
 import com.zego.zegoliveroom.entity.ZegoStreamInfo;
 
 
 import java.util.ArrayList;
-import java.util.Date;
+
+
 
 /**
  * 视频通话主要页面
@@ -49,7 +49,7 @@ public class CommunicationVideoUI extends BaseActivity {
     private CallVideoBeforeBinding   callVideoBeforeBinding;
 
     // 这里为防止多个设备测试时相同流id冲推导致的推流失败，这里使用前缀"s-streamid-"+用户id作为标识
-    private String mPublishStreamid ="s-streamid-"+ new Date().getTime()%(new Date().getTime()/10000);
+    private String mPublishStreamid ;
 
     // 推拉流布局模型
     VideoLayoutModel mVideoLayoutModel;
@@ -70,8 +70,9 @@ public class CommunicationVideoUI extends BaseActivity {
         // 使用DataBinding加载布局
         callVideoBeforeBinding = DataBindingUtil.setContentView(this, R.layout.call_video_before);
 
+    }
 
-
+    private void initData() {
         // 从VideoCommunicationMainUI的Activtity中获取传过来的RoomID，以便登录登录房间并马上推流
         Intent it = getIntent();
         roomid = it.getStringExtra("roomId");
@@ -95,20 +96,20 @@ public class CommunicationVideoUI extends BaseActivity {
 
                 CommunicationVideoUI.this.playStreamids.add(listStream.streamID);
 
-               if(!mPublishStreamid.equalsIgnoreCase(listStream.streamID)){
-                   if(Const.ACTION_ACCEPT.equalsIgnoreCase(action)){
-                       callVideoBeforeBinding.llAcceptVideo.setVisibility(View.GONE);
-                       callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
-                   }
+                if(!mPublishStreamid.equalsIgnoreCase(listStream.streamID)){
+                    if(Const.ACTION_ACCEPT.equalsIgnoreCase(action)){
+                        callVideoBeforeBinding.llAcceptVideo.setVisibility(View.GONE);
+                        callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
+                    }
 
-                   if(Const.ACTION_CALL.equalsIgnoreCase(action)){
-                       callVideoBeforeBinding.llRequestVideo.setVisibility(View.GONE);
-                       callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
-                   }
-                   //开启计时器
-                   callVideoBeforeBinding.tvTime.setBase(SystemClock.elapsedRealtime());
-                   callVideoBeforeBinding.tvTime.start();
-               }
+                    if(Const.ACTION_CALL.equalsIgnoreCase(action)){
+                        callVideoBeforeBinding.llRequestVideo.setVisibility(View.GONE);
+                        callVideoBeforeBinding.llVideoing.setVisibility(View.VISIBLE);
+                    }
+                    //开启计时器
+                    callVideoBeforeBinding.tvTime.setBase(SystemClock.elapsedRealtime());
+                    callVideoBeforeBinding.tvTime.start();
+                }
 
                 return playRenderView;
             }
@@ -121,7 +122,7 @@ public class CommunicationVideoUI extends BaseActivity {
                 }else {
                     Toast.makeText(CommunicationVideoUI.this, "登录房间失败，请检查网络", Toast.LENGTH_LONG).show();
                 }
-                CommunicationVideoUI.this.onBackPressed();
+                finish();
 
             }
 
@@ -132,7 +133,7 @@ public class CommunicationVideoUI extends BaseActivity {
                     message="请检查是否已成功登录房间!";
                 }
                 Toast.makeText(CommunicationVideoUI.this,message, Toast.LENGTH_LONG).show();
-                onBackPressed();
+                finish();
 
             }
 
@@ -141,7 +142,7 @@ public class CommunicationVideoUI extends BaseActivity {
 
                 if("reject".equalsIgnoreCase(content)){
                     Toast.makeText(CommunicationVideoUI.this,App.application.getUserId().equalsIgnoreCase(fromUserId)?"已拒绝对方来电":"对方已经拒绝",Toast.LENGTH_SHORT).show();
-                    onBackPressed();
+                    finish();
                 }else if("pull".equalsIgnoreCase(content)){
                     ZGVideoCommunicationHelper.sharedInstance().pullRoomAllStream();
                 }
@@ -163,7 +164,7 @@ public class CommunicationVideoUI extends BaseActivity {
         callVideoBeforeBinding.ivSelfCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommunicationVideoUI.this.onBackPressed();
+                finish();
                 Toast.makeText(CommunicationVideoUI.this,"通话结束",Toast.LENGTH_SHORT).show();
             }
         });
@@ -173,7 +174,7 @@ public class CommunicationVideoUI extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(CommunicationVideoUI.this,"通话结束",Toast.LENGTH_SHORT).show();
-                CommunicationVideoUI.this.onBackPressed();
+                finish();
             }
         });
 
@@ -196,28 +197,32 @@ public class CommunicationVideoUI extends BaseActivity {
             public void onClick(View v) {
                 //发送消息通知对方拒绝
                 ZGVideoCommunicationHelper.sharedInstance().sendCustomMessage("reject");
+                finish();
             }
         });
-
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
+        mPublishStreamid ="s-streamid-"+System.currentTimeMillis();
+        //初始化操作
+        initData();
         // 在应用内实现悬浮窗，需要依附Activity生命周期
         FloatingView.get().attach(this);
         // 这里创建多人连麦的Model的实例
         this.mVideoLayoutModel = new VideoLayoutModel(this);
         // 直接登录房间
-        ZGVideoCommunicationHelper.sharedInstance().startLoginRoom(roomid);
-
-        //并上传自己的流
-        localPreviewView = CommunicationVideoUI.this.mVideoLayoutModel.addStreamToViewInLayout(CommunicationVideoUI.this.mPublishStreamid);
-        if(Const.ACTION_CALL.equalsIgnoreCase(action)){//发起视频请求后上传自己的流
-            ZGVideoCommunicationHelper.sharedInstance().pushMySelfStream(localPreviewView,mPublishStreamid);
-        }
+       boolean isLoginRoom =  ZGVideoCommunicationHelper.sharedInstance().startLoginRoom(roomid);
+       if(isLoginRoom){
+           //并上传自己的流
+           localPreviewView = CommunicationVideoUI.this.mVideoLayoutModel.addStreamToViewInLayout(CommunicationVideoUI.this.mPublishStreamid);
+           //发起视频请求后上传自己的流
+           if(Const.ACTION_CALL.equalsIgnoreCase(action)){
+               ZGVideoCommunicationHelper.sharedInstance().pushMySelfStream(localPreviewView,mPublishStreamid);
+           }
+       }
 
     }
 
@@ -229,23 +234,14 @@ public class CommunicationVideoUI extends BaseActivity {
     }
 
 
-    /**
-     * 当返回当前Activity的时候应该停止推拉流并退出房间，此处作为参考
-     *
-     */
     @Override
-    public void onBackPressed() {
+    protected void onDestroy() {
+//        ZGVideoCommunicationHelper.sharedInstance().releaseZGVideoCommunicationHelper();
         //停止计时器
         callVideoBeforeBinding.tvTime.stop();
         this.mVideoLayoutModel.removeAllStreamToViewInLayout();
         ZGVideoCommunicationHelper.sharedInstance().quitVideoCommunication(this.playStreamids);
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onDestroy() {
         super.onDestroy();
-//        App.application.getNotificationRoomList().clear();//清空内存存储的所有的视频通知
     }
 
     /**

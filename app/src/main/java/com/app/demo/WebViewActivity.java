@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import com.app.demo.basic.BasicWebViewActivity;
+import com.app.demo.jsinterface.H5JavaInterFaceImpl;
 import com.app.demo.widgets.WebViewProgressBar;
 
 import org.apache.cordova.engine.SystemWebView;
@@ -27,7 +28,7 @@ public class WebViewActivity extends BasicWebViewActivity {
 
 
 
-    private String mUrl = "http://baidu.com";
+    private String mUrl = "file:///android_asset/video.html";
 
     @Override
     public void getBundleExtras(Bundle bundle) {
@@ -43,7 +44,6 @@ public class WebViewActivity extends BasicWebViewActivity {
     @Override
     public void initView() {
         super.initView();
-
     }
 
     @Override
@@ -54,6 +54,8 @@ public class WebViewActivity extends BasicWebViewActivity {
     @Override
     public SystemWebView getSystemWebView() {
         webView = findViewById(R.id.web_view);
+        //注入js
+        webView.addJavascriptInterface(new H5JavaInterFaceImpl(this),"H5JavaInterface");
         return webView;
     }
 
